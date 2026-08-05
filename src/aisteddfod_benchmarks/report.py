@@ -200,11 +200,11 @@ def build_leaderboard(
     lines = [
         f"# Sgorfwrdd {run['run_id']}",
         "",
-        "Mae'r prif sgôr yn rhoi pwysau cyfartal i gymedr macro naw prawf "
+        "Mae'r sgôr cyffredinol yn rhoi pwysau cyfartal i gymedr macro naw prawf "
         "rhesymu Cymraeg a chymedr macro naw prawf Cymraeg ymarferol. Dangosir "
         "BLEU y prawf cyfieithu deddfwriaeth ar wahân.",
         "",
-        "| Safle | Model | Prif sgôr | Rhesymu | Cymraeg ymarferol | Cyfieithu BLEU | Gwrthodiadau | Cwmpas |",
+        "| Safle | Model | Sgôr cyffredinol | Rhesymu | Cymraeg ymarferol | Cyfieithu BLEU | Gwrthodiadau | Cwmpas |",
         "|---:|---|---:|---:|---:|---:|---:|---:|",
     ]
     for item in leaderboard:

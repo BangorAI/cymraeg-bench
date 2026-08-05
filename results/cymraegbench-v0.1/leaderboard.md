@@ -1,8 +1,8 @@
 # Sgorfwrdd cymraegbench-v0.1
 
-Mae'r prif sgôr yn rhoi pwysau cyfartal i gymedr macro naw prawf rhesymu Cymraeg a chymedr macro naw prawf Cymraeg ymarferol. Dangosir BLEU y prawf cyfieithu deddfwriaeth ar wahân.
+Mae'r sgôr cyffredinol yn rhoi pwysau cyfartal i gymedr macro naw prawf rhesymu Cymraeg a chymedr macro naw prawf Cymraeg ymarferol. Dangosir BLEU y prawf cyfieithu deddfwriaeth ar wahân.
 
-| Safle | Model | Prif sgôr | Rhesymu | Cymraeg ymarferol | Cyfieithu BLEU | Gwrthodiadau | Cwmpas |
+| Safle | Model | Sgôr cyffredinol | Rhesymu | Cymraeg ymarferol | Cyfieithu BLEU | Gwrthodiadau | Cwmpas |
 |---:|---|---:|---:|---:|---:|---:|---:|
 | 1 | GPT-5.6 Sol | 82.94 | 84.32 | 81.56 | 71.93 | 0.00% | 100.0% |
 | 2 | Claude Opus 4.8 | 81.56 | 85.02 | 78.11 | 69.29 | 0.05% | 100.0% |

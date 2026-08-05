@@ -100,7 +100,7 @@ cyhoeddadwy fel hyn:
 uv run --locked cymraeg-bench leaderboard runs/cymraegbench-v0.1.sqlite3
 ```
 
-Mae'r prif sgôr yn rhoi pwysau cyfartal i gymedr macro naw prawf rhesymu
+Mae'r sgôr cyffredinol yn rhoi pwysau cyfartal i gymedr macro naw prawf rhesymu
 Cymraeg a chymedr macro naw prawf Cymraeg ymarferol. Dangosir BLEU y prawf
 cyfieithu deddfwriaeth ar wahân. Os bydd galwad yn methu, ailgeisir y rhes
 honno'n unig; mae `metadata.json` yn cadw cyfluniad dechrau'r rhediad a'r
