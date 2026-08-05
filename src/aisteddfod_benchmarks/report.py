@@ -174,6 +174,7 @@ def build_leaderboard(database: Path, output_dir: Path) -> list[dict[str, Any]]:
                 "translation_bleu": round(scores[TRANSLATION_SUITE], 2),
                 "completed": stats["result_count"],
                 "refusals": stats["refusals"],
+                "refusal_pct": round(100 * stats["refusals"] / stats["result_count"], 2),
                 "coverage_pct": 100.0,
                 "cost_usd": round(stats["cost_usd"], 6),
             }
@@ -185,7 +186,7 @@ def build_leaderboard(database: Path, output_dir: Path) -> list[dict[str, Any]]:
     headers = [
         "rank", "model_id", "model", "overall_score", "welsh_reasoning",
         "practical_welsh", "translation_bleu", "completed", "refusals",
-        "coverage_pct", "cost_usd",
+        "refusal_pct", "coverage_pct", "cost_usd",
     ]
     with (output_dir / "leaderboard.csv").open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=headers)
@@ -199,14 +200,15 @@ def build_leaderboard(database: Path, output_dir: Path) -> list[dict[str, Any]]:
         "rhesymu Cymraeg a chymedr macro naw prawf Cymraeg ymarferol. Dangosir "
         "BLEU y prawf cyfieithu deddfwriaeth ar wahân.",
         "",
-        "| Safle | Model | Prif sgôr | Rhesymu | Cymraeg ymarferol | Cyfieithu BLEU | Cwmpas |",
-        "|---:|---|---:|---:|---:|---:|---:|",
+        "| Safle | Model | Prif sgôr | Rhesymu | Cymraeg ymarferol | Cyfieithu BLEU | Gwrthodiadau | Cwmpas |",
+        "|---:|---|---:|---:|---:|---:|---:|---:|",
     ]
     for item in leaderboard:
         lines.append(
             f"| {item['rank']} | {item['model']} | {item['overall_score']:.2f} | "
             f"{item['welsh_reasoning']:.2f} | {item['practical_welsh']:.2f} | "
-            f"{item['translation_bleu']:.2f} | {item['coverage_pct']:.1f}% |"
+            f"{item['translation_bleu']:.2f} | {item['refusal_pct']:.2f}% | "
+            f"{item['coverage_pct']:.1f}% |"
         )
     (output_dir / "leaderboard.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 

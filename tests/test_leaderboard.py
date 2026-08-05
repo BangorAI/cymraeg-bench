@@ -55,6 +55,7 @@ class LeaderboardTests(unittest.TestCase):
 
             self.assertEqual(rows[0]["model"], "Model Cryf")
             self.assertEqual(rows[0]["overall_score"], 100.0)
+            self.assertEqual(rows[0]["refusal_pct"], 0.0)
             self.assertEqual(rows[1]["overall_score"], 50.0)
             self.assertTrue((root / "results" / "leaderboard.csv").exists())
             metadata = json.loads((root / "results" / "metadata.json").read_text())
