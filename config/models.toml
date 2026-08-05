@@ -38,7 +38,7 @@ tier = "scoreboard"
 input_usd_per_million = 10.0
 output_usd_per_million = 50.0
 reasoning_effort = "low"
-min_output_tokens = 256
+min_output_tokens = 512
 
 [[models]]
 id = "grok-4-20"
@@ -80,7 +80,7 @@ tier = "scoreboard"
 input_usd_per_million = 0.76
 output_usd_per_million = 2.42
 reasoning_effort = "none"
-min_output_tokens = 64
+min_output_tokens = 256
 
 [[models]]
 id = "deepseek-v4-flash-0731"
