@@ -24,6 +24,7 @@ enabled = true
 tier = "scoreboard"
 input_usd_per_million = 5.0
 output_usd_per_million = 25.0
+min_output_tokens = 256
 
 [[models]]
 id = "claude-fable-5"
@@ -51,7 +52,7 @@ tier = "scoreboard"
 input_usd_per_million = 1.25
 output_usd_per_million = 2.50
 reasoning_effort = "none"
-min_output_tokens = 256
+min_output_tokens = 512
 
 [[models]]
 id = "kimi-k3"
@@ -65,7 +66,7 @@ tier = "scoreboard"
 input_usd_per_million = 3.0
 output_usd_per_million = 15.0
 reasoning_effort = "none"
-min_output_tokens = 64
+min_output_tokens = 256
 
 [[models]]
 id = "glm-5-2"
@@ -93,7 +94,7 @@ tier = "scoreboard"
 input_usd_per_million = 0.09
 output_usd_per_million = 0.18
 reasoning_effort = "none"
-min_output_tokens = 64
+min_output_tokens = 256
 
 [[models]]
 id = "jupiter-n-120b"
