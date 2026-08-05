@@ -51,7 +51,11 @@ class LeaderboardTests(unittest.TestCase):
             store.finish_run("official", "completed")
             store.close()
 
-            rows = build_leaderboard(database, root / "results")
+            rows = build_leaderboard(
+                database,
+                root / "results",
+                [{"id": "strong", "label": "Model Cryf", "min_output_tokens": 512}],
+            )
 
             self.assertEqual(rows[0]["model"], "Model Cryf")
             self.assertEqual(rows[0]["overall_score"], 100.0)
@@ -60,6 +64,8 @@ class LeaderboardTests(unittest.TestCase):
             self.assertTrue((root / "results" / "leaderboard.csv").exists())
             metadata = json.loads((root / "results" / "metadata.json").read_text())
             self.assertEqual(metadata["techiaith_revision"], "abc123")
+            self.assertEqual(metadata["models"][0]["min_output_tokens"], 512)
+            self.assertIn("models_at_run_start", metadata)
 
     def test_rejects_an_incomplete_run(self):
         with tempfile.TemporaryDirectory() as directory:

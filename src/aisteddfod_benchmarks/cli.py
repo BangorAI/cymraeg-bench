@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import urllib.request
+from dataclasses import asdict
 from pathlib import Path
 
 from .config import (
@@ -118,7 +119,9 @@ def command_report(args: argparse.Namespace) -> int:
 
 def command_leaderboard(args: argparse.Namespace) -> int:
     output_dir = args.output_dir or project_root() / "results" / args.database.stem
-    rows = build_leaderboard(args.database, output_dir)
+    models, _, _ = _catalog(args.config_dir)
+    final_models = [asdict(model) for model in models if model.enabled]
+    rows = build_leaderboard(args.database, output_dir, final_models)
     print(f"{len(rows)} model yn y sgorfwrdd")
     print(output_dir)
     return 0

@@ -87,7 +87,7 @@ def build_report(database: Path, markdown: Path | None = None, csv_path: Path | 
         "cost_usd",
     ]
     with csv_path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=headers)
+        writer = csv.DictWriter(handle, fieldnames=headers, lineterminator="\n")
         writer.writeheader()
         writer.writerows(summary)
     lines = [
@@ -105,7 +105,11 @@ def build_report(database: Path, markdown: Path | None = None, csv_path: Path | 
     return summary
 
 
-def build_leaderboard(database: Path, output_dir: Path) -> list[dict[str, Any]]:
+def build_leaderboard(
+    database: Path,
+    output_dir: Path,
+    final_models: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     output_dir.mkdir(parents=True, exist_ok=True)
     summary = build_report(
         database,
@@ -189,7 +193,7 @@ def build_leaderboard(database: Path, output_dir: Path) -> list[dict[str, Any]]:
         "refusal_pct", "coverage_pct", "cost_usd",
     ]
     with (output_dir / "leaderboard.csv").open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=headers)
+        writer = csv.DictWriter(handle, fieldnames=headers, lineterminator="\n")
         writer.writeheader()
         writer.writerows(leaderboard)
 
@@ -219,9 +223,14 @@ def build_leaderboard(database: Path, output_dir: Path) -> list[dict[str, Any]]:
         "seed": run["seed"],
         "max_cases_per_suite": run["max_cases"],
         "techiaith_revision": metadata.get("techiaith_revision"),
-        "models": metadata.get("models", []),
+        "models_at_run_start": metadata.get("models", []),
+        "models": final_models or metadata.get("models", []),
         "suites": metadata.get("suites", []),
         "status_counts": status_counts,
+        "retry_policy": (
+            "Rows with status=error were retried in place. Successful rows were not rerun; "
+            "the final model configuration records the higher output ceilings used for retries."
+        ),
         "formula": {
             "overall_score": "50% macro mean of 9 objective suites + 50% macro mean of 9 Techiaith suites",
             "translation": "Corpus BLEU, reported separately",

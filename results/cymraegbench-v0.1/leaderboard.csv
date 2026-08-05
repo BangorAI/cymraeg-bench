@@ -1,0 +1,8 @@
+rank,model_id,model,overall_score,welsh_reasoning,practical_welsh,translation_bleu,completed,refusals,refusal_pct,coverage_pct,cost_usd
+1,gpt-5-6-sol,GPT-5.6 Sol,82.94,84.32,81.56,71.93,1821,0,0.0,100.0,1.439945
+2,claude-opus-4-8,Claude Opus 4.8,81.56,85.02,78.11,69.29,1821,1,0.05,100.0,1.958555
+3,claude-fable-5,Claude Fable 5,78.64,83.73,73.56,69.46,1821,79,4.34,100.0,5.83801
+4,kimi-k3,Kimi K3,75.12,77.92,72.33,67.62,1821,0,0.0,100.0,1.372201
+5,glm-5-2,GLM-5.2,68.42,68.62,68.22,57.07,1821,0,0.0,100.0,0.229276
+6,deepseek-v4-flash-0731,DeepSeek V4-Flash-0731,61.63,63.14,60.11,64.95,1821,0,0.0,100.0,0.030307
+7,grok-4-20,Grok 4.20,58.13,62.38,53.89,64.2,1821,0,0.0,100.0,0.366184
