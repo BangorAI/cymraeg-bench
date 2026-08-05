@@ -1,0 +1,275 @@
+techiaith_revision = "47839d2147c97fd2f10a52dd36751608e5fa36bf"
+
+[[suites]]
+id = "arc-welsh-easy"
+label = "BritEval ARC-Easy Cymraeg"
+source = "huggingface"
+dataset = "britllm/arc_welsh"
+dataset_config = "ARC-Easy"
+split = "test"
+adapter = "arc"
+scorer = "choice"
+expected_count = 2354
+max_tokens = 8
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "arc-welsh-challenge"
+label = "BritEval ARC-Challenge Cymraeg"
+source = "huggingface"
+dataset = "britllm/arc_welsh"
+dataset_config = "ARC-Challenge"
+split = "test"
+adapter = "arc"
+scorer = "choice"
+expected_count = 1165
+max_tokens = 8
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "piqa-welsh"
+label = "BritEval PIQA Cymraeg"
+source = "huggingface"
+dataset = "britllm/piqa_welsh"
+dataset_config = "plain_text"
+split = "validation"
+adapter = "piqa"
+scorer = "choice"
+expected_count = 1838
+max_tokens = 8
+trust_remote_code = true
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "truthfulqa-welsh-mc1"
+label = "BritEval TruthfulQA Cymraeg (MC1)"
+source = "huggingface"
+dataset = "britllm/truthfulqa_welsh"
+dataset_config = "multiple_choice"
+split = "validation"
+adapter = "truthfulqa_mc1"
+scorer = "choice"
+expected_count = 750
+max_tokens = 8
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "xnli-brit-cy"
+label = "BritEval XNLI Cymraeg"
+source = "huggingface"
+dataset = "britllm/xnli_brit"
+dataset_config = "cy"
+split = "validation"
+adapter = "xnli"
+scorer = "choice"
+expected_count = 2431
+max_tokens = 8
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "mgsm-cy"
+label = "Techiaith MGSM Cymraeg"
+source = "huggingface"
+dataset = "techiaith/mgsm_cy"
+dataset_config = "default"
+split = "test"
+adapter = "mgsm"
+scorer = "number"
+expected_count = 250
+max_tokens = 32
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "copa-cy"
+label = "Techiaith COPA Cymraeg"
+source = "huggingface"
+dataset = "techiaith/COPA-cy"
+dataset_config = "default"
+split = "test"
+adapter = "copa"
+scorer = "choice"
+expected_count = 500
+max_tokens = 8
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "wnli-cy"
+label = "Techiaith WNLI Cymraeg"
+source = "huggingface"
+dataset = "techiaith/wnli-cy"
+dataset_config = "default"
+split = "validation"
+adapter = "wnli"
+scorer = "choice"
+expected_count = 71
+max_tokens = 8
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "welsh-cefr"
+label = "Cardiff NLP Welsh CEFR"
+source = "huggingface"
+dataset = "cardiffnlp/welsh-cefr"
+dataset_config = "default"
+split = "train"
+adapter = "cefr"
+scorer = "choice"
+expected_count = 2658
+max_tokens = 8
+group = "objective"
+enabled = true
+
+[[suites]]
+id = "welsh-lexicon"
+label = "Techiaith: geirfa"
+source = "techiaith_jsonl"
+path = "welsh-lexicon/data/welsh-lexicon/samples.jsonl"
+adapter = "techiaith"
+scorer = "exact"
+expected_count = 14083
+max_tokens = 16
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "welsh-grammar"
+label = "Techiaith: gramadeg"
+source = "techiaith_jsonl"
+path = "welsh-grammar/data/welsh-grammar/samples.jsonl"
+adapter = "techiaith"
+scorer = "exact"
+expected_count = 991
+max_tokens = 16
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "welsh-yes-no"
+label = "Techiaith: atebion ie/na"
+source = "techiaith_jsonl"
+path = "welsh-yes-no/data/welsh-yes-no/samples.jsonl"
+adapter = "techiaith"
+scorer = "exact"
+expected_count = 268
+max_tokens = 16
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "welsh-obscenities"
+label = "Techiaith: rhegfeydd"
+source = "techiaith_jsonl"
+path = "welsh-obscenities/data/welsh-obscenities/samples.jsonl"
+adapter = "techiaith"
+scorer = "exact"
+expected_count = 230
+max_tokens = 16
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "welsh-bilingual-placenames"
+label = "Techiaith: enwau lleoedd dwyieithog"
+source = "techiaith_jsonl"
+path = "welsh-bilingual-placenames/data/welsh-bilingual-placenames/samples.jsonl"
+adapter = "techiaith"
+scorer = "exact"
+expected_count = 660
+max_tokens = 32
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "welsh-legislation-translation"
+label = "Techiaith: cyfieithu deddfwriaeth"
+source = "techiaith_jsonl"
+path = "welsh-legislation-translation/data/welsh-legislation-translation/samples.jsonl"
+adapter = "techiaith"
+scorer = "bleu"
+expected_count = 3003
+max_tokens = 768
+group = "generation"
+enabled = true
+
+[[suites]]
+id = "welsh-registers"
+label = "Techiaith: cofrestrau"
+source = "techiaith_jsonl"
+path = "welsh-registers/data/welsh-registers/samples.jsonl"
+adapter = "techiaith"
+scorer = "exact"
+expected_count = 875
+max_tokens = 16
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "welsh-mmlu-lite"
+label = "Techiaith: MMLU-lite"
+source = "techiaith_jsonl"
+path = "welsh-mmlu-lite/data/welsh-mmlu-lite/samples.jsonl"
+adapter = "techiaith"
+scorer = "choice"
+expected_count = 400
+max_tokens = 8
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "welsh-toxigen"
+label = "Techiaith: ToxiGen"
+source = "techiaith_jsonl"
+path = "welsh-toxigen/data/welsh-toxigen/samples.jsonl"
+adapter = "techiaith"
+scorer = "exact"
+expected_count = 905
+max_tokens = 16
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "welsh-arc-easy-mini-cy"
+label = "Techiaith: ARC-Easy mini"
+source = "techiaith_jsonl"
+path = "welsh-arc-easy-mini-cy/data/welsh-arc-easy-mini-cy/samples.jsonl"
+adapter = "techiaith"
+scorer = "choice"
+expected_count = 50
+max_tokens = 8
+group = "techiaith"
+enabled = true
+
+[[suites]]
+id = "cynghanedd-hidden"
+label = "Bangor AI: protocol cudd y gynghanedd"
+source = "private_jsonl"
+path = "data/private/cynghanedd-themes.jsonl"
+adapter = "cynghanedd"
+scorer = "external_json"
+scorer_command_env = "CYNGHANEDD_SCORER_COMMAND"
+expected_count = 40
+repetitions = 5
+max_tokens = 96
+group = "private"
+enabled = false
+
+[[suites]]
+id = "barddas-validator"
+label = "Bangor AI: meincnod dilysydd Barddas"
+source = "private_jsonl"
+path = "data/private/barddas.jsonl"
+adapter = "barddas"
+scorer = "external_json"
+scorer_command_env = "BARDDAS_SCORER_COMMAND"
+expected_count = 1092
+group = "validator"
+enabled = false
+validator_only = true

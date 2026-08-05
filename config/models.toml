@@ -1,0 +1,158 @@
+catalog_checked = "2026-08-05"
+
+[[models]]
+id = "gpt-5-6-sol"
+label = "GPT-5.6 Sol"
+provider = "openai"
+api_model = "gpt-5.6-sol"
+api_key_env = "OPENAI_API_KEY"
+base_url = "https://api.openai.com/v1"
+enabled = true
+tier = "scoreboard"
+input_usd_per_million = 5.0
+output_usd_per_million = 30.0
+reasoning_effort = "none"
+
+[[models]]
+id = "claude-opus-4-8"
+label = "Claude Opus 4.8"
+provider = "anthropic"
+api_model = "claude-opus-4-8"
+api_key_env = "ANTHROPIC_API_KEY"
+base_url = "https://api.anthropic.com/v1"
+enabled = true
+tier = "scoreboard"
+input_usd_per_million = 5.0
+output_usd_per_million = 25.0
+
+[[models]]
+id = "claude-fable-5"
+label = "Claude Fable 5"
+provider = "anthropic"
+api_model = "claude-fable-5"
+api_key_env = "ANTHROPIC_API_KEY"
+base_url = "https://api.anthropic.com/v1"
+enabled = true
+tier = "scoreboard"
+input_usd_per_million = 10.0
+output_usd_per_million = 50.0
+reasoning_effort = "low"
+min_output_tokens = 256
+
+[[models]]
+id = "grok-4-20"
+label = "Grok 4.20"
+provider = "openrouter"
+api_model = "x-ai/grok-4.20"
+api_key_env = "OPENROUTER_API_KEY"
+base_url = "https://openrouter.ai/api/v1"
+enabled = true
+tier = "scoreboard"
+input_usd_per_million = 1.25
+output_usd_per_million = 2.50
+
+[[models]]
+id = "kimi-k3"
+label = "Kimi K3"
+provider = "openrouter"
+api_model = "moonshotai/kimi-k3"
+api_key_env = "OPENROUTER_API_KEY"
+base_url = "https://openrouter.ai/api/v1"
+enabled = true
+tier = "scoreboard"
+input_usd_per_million = 3.0
+output_usd_per_million = 15.0
+reasoning_effort = "none"
+min_output_tokens = 64
+
+[[models]]
+id = "glm-5-2"
+label = "GLM-5.2"
+provider = "openrouter"
+api_model = "z-ai/glm-5.2"
+api_key_env = "OPENROUTER_API_KEY"
+base_url = "https://openrouter.ai/api/v1"
+enabled = true
+tier = "scoreboard"
+input_usd_per_million = 0.76
+output_usd_per_million = 2.42
+reasoning_effort = "none"
+
+[[models]]
+id = "deepseek-v4-flash-0731"
+label = "DeepSeek V4-Flash-0731"
+provider = "openrouter"
+api_model = "deepseek/deepseek-v4-flash-0731"
+api_key_env = "OPENROUTER_API_KEY"
+base_url = "https://openrouter.ai/api/v1"
+enabled = true
+tier = "scoreboard"
+input_usd_per_million = 0.09
+output_usd_per_million = 0.18
+reasoning_effort = "none"
+
+[[models]]
+id = "jupiter-n-120b"
+label = "Jupiter-N-120B"
+provider = "openai_compatible"
+api_model = "locailabs/Jupiter-N-120B"
+api_key_env = "JUPITER_API_KEY"
+base_url = "http://127.0.0.1:8001/v1"
+base_url_env = "JUPITER_API_BASE"
+enabled = false
+tier = "scoreboard"
+
+[[models]]
+id = "caernarfon-3b"
+label = "Caernarfon 3B"
+provider = "openai_compatible"
+api_model = "britllm/britllm-3b-v0.1"
+api_key_env = "CAERNARFON_API_KEY"
+base_url = "http://127.0.0.1:8002/v1"
+base_url_env = "CAERNARFON_API_BASE"
+enabled = false
+tier = "scoreboard"
+
+[[models]]
+id = "mwydryn"
+label = "Mwydryn"
+provider = "openai_compatible"
+api_model = "BangorAI/phi2-mwydryn-1"
+api_key_env = "MWYDRYN_API_KEY"
+base_url = "http://127.0.0.1:8003/v1"
+base_url_env = "MWYDRYN_API_BASE"
+enabled = false
+tier = "scoreboard"
+
+[[models]]
+id = "mistral-7b-reference"
+label = "Mistral 7B (cyfeirnod BritEval)"
+provider = "openai_compatible"
+api_model = "mistralai/Mistral-7B-Instruct-v0.3"
+api_key_env = "REFERENCE_API_KEY"
+base_url = "http://127.0.0.1:8004/v1"
+base_url_env = "REFERENCE_API_BASE"
+enabled = false
+tier = "reference"
+
+[[models]]
+id = "llama-3-8b-reference"
+label = "Llama 3 8B (cyfeirnod BritEval)"
+provider = "openai_compatible"
+api_model = "meta-llama/Meta-Llama-3-8B-Instruct"
+api_key_env = "REFERENCE_API_KEY"
+base_url = "http://127.0.0.1:8004/v1"
+base_url_env = "REFERENCE_API_BASE"
+enabled = false
+tier = "reference"
+
+[[models]]
+id = "bangor-mistral-cymraeg-v2"
+label = "BangorAI Mistral-7B-Cymraeg-Welsh-v2"
+provider = "openai_compatible"
+api_model = "BangorAI/Mistral-7B-Cymraeg-Welsh-v2"
+api_key_env = "REFERENCE_API_KEY"
+base_url = "http://127.0.0.1:8004/v1"
+base_url_env = "REFERENCE_API_BASE"
+enabled = false
+tier = "reference"
