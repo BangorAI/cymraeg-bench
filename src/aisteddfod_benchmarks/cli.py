@@ -14,7 +14,7 @@ from .config import (
     select_models,
     select_suites,
 )
-from .report import build_report
+from .report import build_leaderboard, build_report
 from .runner import planned_calls, run_evaluation
 
 
@@ -116,6 +116,14 @@ def command_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_leaderboard(args: argparse.Namespace) -> int:
+    output_dir = args.output_dir or project_root() / "results" / args.database.stem
+    rows = build_leaderboard(args.database, output_dir)
+    print(f"{len(rows)} model yn y sgorfwrdd")
+    print(output_dir)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Meincnodau Cymraeg AIsteddfod")
     parser.add_argument(
@@ -149,6 +157,13 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument("--markdown", type=Path)
     report.add_argument("--csv", type=Path)
     report.set_defaults(func=command_report)
+
+    leaderboard = subparsers.add_parser(
+        "leaderboard", help="Creu sgorfwrdd cyhoeddadwy o rediad cyflawn"
+    )
+    leaderboard.add_argument("database", type=Path)
+    leaderboard.add_argument("--output-dir", type=Path)
+    leaderboard.set_defaults(func=command_leaderboard)
     return parser
 
 

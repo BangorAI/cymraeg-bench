@@ -93,6 +93,17 @@ uv run --locked --env-file .env cymraeg-bench run \
   --max-cases 100 --seed 1 --workers 7 --max-usd 25
 ```
 
+Pan fydd pob galwad wedi cwblhau heb wall, cynhyrchir y sgorfwrdd a'r metadata
+cyhoeddadwy fel hyn:
+
+```bash
+uv run --locked cymraeg-bench leaderboard runs/cymraegbench-v0.1.sqlite3
+```
+
+Mae'r prif sgôr yn rhoi pwysau cyfartal i gymedr macro naw prawf rhesymu
+Cymraeg a chymedr macro naw prawf Cymraeg ymarferol. Dangosir BLEU y prawf
+cyfieithu deddfwriaeth ar wahân.
+
 ## Trwydded
 
 Mae cod CymraegBench ar gael o dan drwydded MIT. Gweler [LICENSE](LICENSE).
