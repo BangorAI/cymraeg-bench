@@ -101,6 +101,7 @@ def command_run(args: argparse.Namespace) -> int:
         max_cases=args.max_cases,
         max_usd=args.max_usd,
         seed=args.seed,
+        workers=args.workers,
     )
     print(f"Rhediad {run_id}: {completed} wedi cwblhau; {errors} gwall")
     print(path)
@@ -139,6 +140,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--max-cases", type=int)
     run.add_argument("--max-usd", type=float)
     run.add_argument("--seed", type=int, default=1)
+    run.add_argument("--workers", type=int, default=1)
     run.add_argument("--run-id")
     run.set_defaults(func=command_run)
 

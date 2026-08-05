@@ -79,6 +79,20 @@ yna cadwch `pyproject.toml` ac `uv.lock` gyda'i gilydd.
 
 Cedwir `aisteddfod-bench` fel alias cydnaws ar gyfer sgriptiau presennol.
 
+Ar gyfer rhediad swyddogol, gellir defnyddio `--workers 7` i redeg hyd at un
+galwad yr un pryd ar gyfer pob model. Mae pob ysgrifen SQLite yn dal i
+ddigwydd yn y brif broses, ac mae'r checkpoint yn ailgeisio rhesi gwall yn
+unig wrth ailddechrau'r un `--run-id`.
+
+Protocol cyhoeddi CymraegBench v0.1 yw hyd at 100 achos penderfynedig o bob
+set, gyda'r had 1 a therfyn cost diogel:
+
+```bash
+uv run --locked --env-file .env cymraeg-bench run \
+  --run-id cymraegbench-v0.1 \
+  --max-cases 100 --seed 1 --workers 7 --max-usd 25
+```
+
 ## Trwydded
 
 Mae cod CymraegBench ar gael o dan drwydded MIT. Gweler [LICENSE](LICENSE).

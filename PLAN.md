@@ -59,8 +59,9 @@ yn `data/private/` a darparu'r gorchymyn dilysu drwy newidyn amgylchedd.
    a'r ffynonellau.
 2. Rhediad mwg: pob model x pob set drwy `uv run`, gyda `--max-cases 3`.
 3. Adolygu gwallau, gwrthodiadau, cost a fformat atebion.
-4. Rhediad llawn wrth grŵp (objective, generation, private) gyda `--max-usd`
-   a checkpoint SQLite; ailgychwyn yr un `--run-id` os oes toriad.
+4. Rhediad cyhoeddus v0.1: hyd at 100 achos o bob set, `--seed 1`,
+   `--workers 7` a `--max-usd 25`, gyda checkpoint SQLite; ailgychwyn yr un
+   `--run-id` os oes toriad.
 5. Cynhyrchu adroddiad Markdown/CSV, yna archwilio sampl o atebion â llaw cyn
    cyhoeddi unrhyw sgorfwrdd.
 
