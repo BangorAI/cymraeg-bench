@@ -1,0 +1,16 @@
+{%- set ns = namespace(system_prompt="Rydych chi'n gynorthwyydd cymwynasgar. Atebwch yn glir ac yn gywir yn iaith y defnyddiwr.") -%}
+{%- for message in messages -%}
+  {%- if message['role'] == 'system' -%}
+    {%- set ns.system_prompt = message['content'] -%}
+  {%- elif message['role'] == 'user' -%}
+    {{- bos_token + '[INST] ' -}}
+    {%- if loop.first or (loop.index0 == 1 and messages[0]['role'] == 'system') -%}
+      {{- '<<SYS>>\n' + ns.system_prompt + '\n<</SYS>>\n\n' -}}
+    {%- endif -%}
+    {{- message['content'] + ' [/INST]' -}}
+  {%- elif message['role'] == 'assistant' -%}
+    {{- ' ' + message['content'] + eos_token -}}
+  {%- else -%}
+    {{- raise_exception('Rôl annilys: ' + message['role']) -}}
+  {%- endif -%}
+{%- endfor -%}

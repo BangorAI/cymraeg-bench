@@ -1,0 +1,24 @@
+{%- set ns = namespace(instruction='') %}
+{%- for message in messages %}
+{%- if message['role'] == 'system' %}
+{%- set ns.instruction = message['content'] | trim %}
+{%- elif message['role'] == 'user' %}
+{%- if ns.instruction %}
+{%- set ns.instruction = ns.instruction + '\n\n' + (message['content'] | trim) %}
+{%- else %}
+{%- set ns.instruction = message['content'] | trim %}
+{%- endif %}
+{{- '' -}}Below is an instruction that describes a task in the Welsh language.
+Write a response in Welsh that appropriately completes the request.
+
+### Instruction:
+{{ ns.instruction }}
+
+### Response:{{ '\n' }}
+{%- elif message['role'] == 'assistant' %}
+{{ message['content'] | trim }}
+
+{%- else %}
+{{ raise_exception('Rôl annilys: ' + message['role']) }}
+{%- endif %}
+{%- endfor %}

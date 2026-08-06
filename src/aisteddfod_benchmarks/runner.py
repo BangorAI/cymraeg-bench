@@ -35,6 +35,16 @@ def _evaluate_one(
     if refused:
         score = 0.0
         scoring = {"refusal": True}
+        if suite.id.startswith("ccc-"):
+            dimensions = {
+                "ccc_edit": ["cywiriad", "categori", "rheol", "esboniad"],
+                "ccc_fidelity": ["ffeithiau", "dyfyniad", "cwmpas", "ffyddlondeb"],
+                "ccc_grounded": ["cyfeiriadau", "ateb", "dim_rhithgyfeirio"],
+                "ccc_sources": ["dewis_ffynonellau", "dim_ffynonellau_annerbyniol"],
+            }.get(suite.scorer, [])
+            if suite.scorer == "choice" and case.metadata.get("dimension") in {"priod", "term"}:
+                dimensions = [str(case.metadata["dimension"])]
+            scoring["components"] = {dimension: 0.0 for dimension in dimensions}
     else:
         score, scoring = score_prediction(
             suite.scorer,

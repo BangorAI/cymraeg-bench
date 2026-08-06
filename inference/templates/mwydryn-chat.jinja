@@ -1,0 +1,19 @@
+{%- set ns = namespace(instruction='') %}
+{%- for message in messages %}
+{%- if message['role'] == 'system' %}
+{%- set ns.instruction = message['content'] | trim %}
+{%- elif message['role'] == 'user' %}
+{%- if ns.instruction %}
+{%- set ns.instruction = ns.instruction + '\n\n' + (message['content'] | trim) %}
+{%- else %}
+{%- set ns.instruction = message['content'] | trim %}
+{%- endif %}
+### Instruction:
+{{ ns.instruction }}
+
+### Response:
+{%- elif message['role'] == 'assistant' %}
+{{ message['content'] | trim }}
+
+{%- endif %}
+{%- endfor %}

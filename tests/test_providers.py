@@ -98,6 +98,20 @@ class ProviderTests(unittest.TestCase):
             response = providers.generate(configured, "s", "u", max_tokens=8)
         self.assertEqual(response.text, "A")
 
+    def test_chat_passes_model_repetition_penalty(self):
+        def fake_post(url, headers, payload, **kwargs):
+            self.assertEqual(payload["repetition_penalty"], 1.15)
+            return {
+                "model": "api-model",
+                "choices": [{"message": {"content": "A"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 2, "completion_tokens": 1},
+            }, 4
+
+        configured = model("openai_compatible", repetition_penalty=1.15)
+        with patch.object(providers, "_post_json", fake_post):
+            response = providers.generate(configured, "s", "u", max_tokens=8)
+        self.assertEqual(response.text, "A")
+
     def test_truncated_response_is_an_error(self):
         fake = (
             {

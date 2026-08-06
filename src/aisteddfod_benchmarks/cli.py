@@ -15,7 +15,8 @@ from .config import (
     select_models,
     select_suites,
 )
-from .report import build_leaderboard, build_report
+from .finalize import finalize_output_errors
+from .report import build_ccc_report, build_leaderboard, build_report
 from .runner import planned_calls, run_evaluation
 
 
@@ -117,10 +118,27 @@ def command_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_ccc_report(args: argparse.Namespace) -> int:
+    summary = build_ccc_report(args.database, args.markdown, args.csv)
+    print(f"{len(summary)} rhes dimensiwn CCC")
+    print(args.markdown or args.database.with_name(f"{args.database.stem}-ccc.md"))
+    print(args.csv or args.database.with_name(f"{args.database.stem}-ccc.csv"))
+    return 0
+
+
+def command_finalize_output_errors(args: argparse.Namespace) -> int:
+    converted, remaining = finalize_output_errors(args.database)
+    print(f"{converted} allbwn model annilys wedi'u sgorio'n sero")
+    print(f"{remaining} gwall seilwaith heb ei ddatrys")
+    return 1 if remaining else 0
+
+
 def command_leaderboard(args: argparse.Namespace) -> int:
     output_dir = args.output_dir or project_root() / "results" / args.database.stem
     models, _, _ = _catalog(args.config_dir)
-    final_models = [asdict(model) for model in models if model.enabled]
+    # Mae build_leaderboard yn hidlo'r catalog i'r modelau sydd yn y DB. Mae
+    # angen cynnwys modelau lleol analluog yma pan gyfunir rhediadau cyhoeddi.
+    final_models = [asdict(model) for model in models]
     rows = build_leaderboard(args.database, output_dir, final_models)
     print(f"{len(rows)} model yn y sgorfwrdd")
     print(output_dir)
@@ -160,6 +178,21 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument("--markdown", type=Path)
     report.add_argument("--csv", type=Path)
     report.set_defaults(func=command_report)
+
+    ccc_report = subparsers.add_parser(
+        "ccc-report", help="Creu adroddiad dimensiynau archwiliad iaith CCC"
+    )
+    ccc_report.add_argument("database", type=Path)
+    ccc_report.add_argument("--markdown", type=Path)
+    ccc_report.add_argument("--csv", type=Path)
+    ccc_report.set_defaults(func=command_ccc_report)
+
+    finalize = subparsers.add_parser(
+        "finalize-output-errors",
+        help="Sgorio allbynnau gwag neu doredig parhaol yn sero ar ôl ailbrofi",
+    )
+    finalize.add_argument("database", type=Path)
+    finalize.set_defaults(func=command_finalize_output_errors)
 
     leaderboard = subparsers.add_parser(
         "leaderboard", help="Creu sgorfwrdd cyhoeddadwy o rediad cyflawn"

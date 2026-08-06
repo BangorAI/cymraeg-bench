@@ -1,0 +1,2 @@
+rank,model_id,model,overall_score,welsh_reasoning,practical_welsh,translation_bleu,completed,refusals,refusal_pct,invalids,invalid_pct,coverage_pct,cost_usd
+1,mwydryn,Mwydryn,26.9,36.47,17.33,9.11,2053,0,0.0,58,2.83,100.0,0

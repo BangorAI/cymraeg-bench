@@ -47,6 +47,13 @@ def _adapt(suite: SuiteConfig, row: dict[str, Any], index: int) -> Case:
         system = next((m["content"] for m in messages if m["role"] == "system"), "")
         user = "\n".join(m["content"] for m in messages if m["role"] == "user")
         return Case(case_id, system, user, str(row["ideal"]), {"source_index": index})
+    if adapter == "local":
+        expected = row["ideal"]
+        if not isinstance(expected, str):
+            expected = json.dumps(expected, ensure_ascii=False, sort_keys=True)
+        metadata = dict(row.get("metadata", {}))
+        metadata["source_index"] = index
+        return Case(case_id, row["system"], row["user"], expected, metadata)
     if adapter == "arc":
         labels = [str(x) for x in row["choices"]["label"]]
         user = f"{row['question']}\n\n{_format_choices(labels, row['choices']['text'])}"
@@ -172,6 +179,12 @@ def load_cases(
         path = root / suite.path
         if not path.exists():
             raise FileNotFoundError(f"Data preifat ar goll: {path}")
+        rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    elif suite.source == "local_jsonl":
+        assert suite.path
+        path = root / suite.path
+        if not path.exists():
+            raise FileNotFoundError(f"Data lleol ar goll: {path}")
         rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     else:
         raise ValueError(f"Ffynhonnell anhysbys: {suite.source}")

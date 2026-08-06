@@ -1,4 +1,5 @@
 import unittest
+import json
 
 from aisteddfod_benchmarks.config import SuiteConfig
 from aisteddfod_benchmarks.datasets import _adapt
@@ -29,6 +30,22 @@ class DatasetTests(unittest.TestCase):
     def test_mgsm_uses_answer_number(self):
         case = _adapt(suite("mgsm", "number"), {"question": "2+2?", "answer_number": 4}, 0)
         self.assertEqual(case.expected, "4")
+
+    def test_local_adapter_serializes_structured_target_and_metadata(self):
+        case = _adapt(
+            suite("local", "ccc_edit"),
+            {
+                "id": "ccc-1",
+                "system": "System",
+                "user": "Defnyddiwr",
+                "ideal": {"category": "treiglad"},
+                "metadata": {"dimension": "cywiro"},
+            },
+            3,
+        )
+        self.assertEqual(json.loads(case.expected), {"category": "treiglad"})
+        self.assertEqual(case.metadata["dimension"], "cywiro")
+        self.assertEqual(case.metadata["source_index"], 3)
 
 
 if __name__ == "__main__":

@@ -248,6 +248,90 @@ group = "techiaith"
 enabled = true
 
 [[suites]]
+id = "ccc-cywiro-esbonio"
+label = "Archwiliad CCC: cywiro ac esbonio"
+source = "local_jsonl"
+path = "data/ccc-audit/cywiro-esbonio.jsonl"
+adapter = "local"
+scorer = "ccc_edit"
+expected_count = 64
+max_tokens = 256
+group = "ccc"
+enabled = true
+
+[[suites]]
+id = "ccc-priod-ddull"
+label = "Archwiliad CCC: priod-ddull a naturioldeb"
+source = "local_jsonl"
+path = "data/ccc-audit/priod-ddull.jsonl"
+adapter = "local"
+scorer = "choice"
+expected_count = 32
+max_tokens = 8
+group = "ccc"
+enabled = true
+
+[[suites]]
+id = "ccc-termau"
+label = "Archwiliad CCC: termau safonol"
+source = "local_jsonl"
+path = "data/ccc-audit/termau.jsonl"
+adapter = "local"
+scorer = "choice"
+expected_count = 32
+max_tokens = 8
+group = "ccc"
+enabled = true
+
+[[suites]]
+id = "ccc-crynhoi-dyfynnu"
+label = "Archwiliad CCC: crynhoi a chadw dyfyniadau"
+source = "local_jsonl"
+path = "data/ccc-audit/crynhoi-dyfynnu.jsonl"
+adapter = "local"
+scorer = "ccc_fidelity"
+expected_count = 24
+max_tokens = 384
+group = "ccc"
+enabled = true
+
+[[suites]]
+id = "ccc-cyfeiriadau"
+label = "Archwiliad CCC: cyfeiriadau a pheidio â dychmygu"
+source = "local_jsonl"
+path = "data/ccc-audit/cyfeiriadau.jsonl"
+adapter = "local"
+scorer = "ccc_grounded"
+expected_count = 32
+max_tokens = 192
+group = "ccc"
+enabled = true
+
+[[suites]]
+id = "ccc-cyfarwyddyd-cymraeg"
+label = "Archwiliad CCC: dewis ffynonellau, cyfarwyddyd Cymraeg"
+source = "local_jsonl"
+path = "data/ccc-audit/cyfarwyddyd-cymraeg.jsonl"
+adapter = "local"
+scorer = "ccc_sources"
+expected_count = 24
+max_tokens = 64
+group = "ccc"
+enabled = true
+
+[[suites]]
+id = "ccc-cyfarwyddyd-saesneg"
+label = "Archwiliad CCC: dewis ffynonellau, cyfarwyddyd Saesneg"
+source = "local_jsonl"
+path = "data/ccc-audit/cyfarwyddyd-saesneg.jsonl"
+adapter = "local"
+scorer = "ccc_sources"
+expected_count = 24
+max_tokens = 64
+group = "ccc"
+enabled = true
+
+[[suites]]
 id = "cynghanedd-hidden"
 label = "Bangor AI: protocol cudd y gynghanedd"
 source = "private_jsonl"

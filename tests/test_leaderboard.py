@@ -65,6 +65,7 @@ class LeaderboardTests(unittest.TestCase):
             metadata = json.loads((root / "results" / "metadata.json").read_text())
             self.assertEqual(metadata["techiaith_revision"], "abc123")
             self.assertEqual(metadata["models"][0]["min_output_tokens"], 512)
+            self.assertEqual([item["id"] for item in metadata["models"]], ["strong"])
             self.assertIn("models_at_run_start", metadata)
 
     def test_rejects_an_incomplete_run(self):

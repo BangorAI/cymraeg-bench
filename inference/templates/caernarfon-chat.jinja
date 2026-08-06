@@ -1,0 +1,12 @@
+{%- for message in messages %}
+{%- if message['role'] == 'system' %}
+{{ message['content'] | trim }}
+
+{%- elif message['role'] == 'user' %}
+Defnyddiwr: {{ message['content'] | trim }}
+Cynorthwyydd:
+{%- elif message['role'] == 'assistant' %}
+{{ message['content'] | trim }}
+
+{%- endif %}
+{%- endfor %}

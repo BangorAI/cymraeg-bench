@@ -5,6 +5,12 @@ Gymraeg. CymraegBench yw'r harnais ymchwil sy'n sail i sgorfwrdd
 [AIsteddfod](https://aisteddfod.com/); mae'n cyfuno setiau BritEval, Techiaith,
 Cardiff NLP a phrotocolau BangorAI mewn un broses dryloyw.
 
+Mae hefyd yn cynnwys [Archwiliad Iaith CCC](data/ccc-audit/README.md): 232 o
+achosion agored sy'n troi canfyddiadau ansoddol adroddiad Kara Lewis am AI,
+y Gymraeg ac addysg uwch yn saith is-set ailadroddadwy. Mae'r archwiliad yn
+mesur cywiro ac esbonio ar wahân, priod-ddull, termau, crynhoi, dyfyniadau,
+cyfeiriadau ac effaith iaith y cyfarwyddyd.
+
 Gweler [PLAN.md](PLAN.md) am y protocol, tarddiad y setiau a'r rhesymau dros y
 dewisiadau sgorio. Nid yw canlyniadau rhediadau mwg yn sgoriau cyhoeddadwy:
 eu diben yw gwirio'r harnais, terfynau tocynnau a fformat atebion cyn rhediad
@@ -20,6 +26,7 @@ uv run --locked --env-file .env cymraeg-bench validate
 uv run --locked --env-file .env cymraeg-bench plan --max-cases 3
 uv run --locked --env-file .env cymraeg-bench run --max-cases 3 --max-usd 5
 uv run --locked --env-file .env cymraeg-bench report runs/<run-id>.sqlite3
+uv run --locked --env-file .env cymraeg-bench ccc-report runs/<run-id>.sqlite3
 ```
 
 Mae `uv` yn rheoli Python 3.11, `.venv`, y dibyniaethau a `uv.lock`. Mae
@@ -57,6 +64,11 @@ lwybr wedi'u hanwybyddu gan Git. Gosodwch `CYNGHANEDD_SCORER_COMMAND` neu
 JSON. Nid yw'r prosiect yn dyblygu cynnwys cudd na thrwyddedig.
 
 ## Allbynnau
+
+Mae'r canlyniadau cyhoeddus yn cynnwys y
+[sgorfwrdd saith-model gwreiddiol](results/cymraegbench-v0.1/leaderboard.md)
+a'r [sgorfwrdd estynedig 12-model](results/cymraegbench-v0.1-estynedig/README.md),
+sy'n ychwanegu pum model agored a redwyd yn lleol.
 
 Mae pob rhediad yn creu `runs/<run-id>.sqlite3`; gall `report` greu Markdown a
 CSV. Mae'r gronfa'n cadw'r prompt, ateb, cyfeirnod, sgôr, tocynnau, cost,
@@ -105,6 +117,17 @@ Cymraeg a chymedr macro naw prawf Cymraeg ymarferol. Dangosir BLEU y prawf
 cyfieithu deddfwriaeth ar wahân. Os bydd galwad yn methu, ailgeisir y rhes
 honno'n unig; mae `metadata.json` yn cadw cyfluniad dechrau'r rhediad a'r
 cyfluniad terfynol a ddefnyddiwyd wrth ailgeisio.
+
+I redeg yr archwiliad CCC yn unig:
+
+```bash
+uv run --locked --env-file .env cymraeg-bench run \
+  --run-id ccc-v0.1-beta --suites ccc-cywiro-esbonio,ccc-priod-ddull,ccc-termau,ccc-crynhoi-dyfynnu,ccc-cyfeiriadau,ccc-cyfarwyddyd-cymraeg,ccc-cyfarwyddyd-saesneg \
+  --seed 1 --workers 7
+uv run --locked cymraeg-bench ccc-report runs/ccc-v0.1-beta.sqlite3
+```
+
+Nid yw'r dimensiynau CCC wedi'u cynnwys yn fformiwla sgôr gyffredinol v0.1.
 
 ## Trwydded
 

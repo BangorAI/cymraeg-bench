@@ -1,0 +1,2 @@
+rank,model_id,model,overall_score,welsh_reasoning,practical_welsh,translation_bleu,completed,refusals,refusal_pct,invalids,invalid_pct,coverage_pct,cost_usd
+1,bangor-mistral-cymraeg-v2,BangorAI Mistral-7B-Cymraeg-Welsh-v2,30.09,40.85,19.33,31.39,2053,0,0.0,10,0.49,100.0,0

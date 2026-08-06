@@ -1,0 +1,2 @@
+rank,model_id,model,overall_score,welsh_reasoning,practical_welsh,translation_bleu,completed,refusals,refusal_pct,invalids,invalid_pct,coverage_pct,cost_usd
+1,mwydryn-7b-v2,BangorAI Mwydryn 7B fersiwn 2,30.37,39.96,20.78,41.89,2053,0,0.0,17,0.83,100.0,0

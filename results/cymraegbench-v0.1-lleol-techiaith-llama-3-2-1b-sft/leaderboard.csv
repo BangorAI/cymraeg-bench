@@ -1,0 +1,2 @@
+rank,model_id,model,overall_score,welsh_reasoning,practical_welsh,translation_bleu,completed,refusals,refusal_pct,invalids,invalid_pct,coverage_pct,cost_usd
+1,techiaith-llama-3-2-1b-sft,Techiaith Llama 3.2 1B Welsh SFT,9.87,17.18,2.56,1.05,2053,0,0.0,709,34.53,100.0,0

@@ -1,0 +1,42 @@
+{
+  "name": "Archwiliad Iaith CCC",
+  "version": "0.1.0-beta",
+  "total_cases": 232,
+  "files": [
+    {
+      "file": "cywiro-esbonio.jsonl",
+      "cases": 64,
+      "sha256": "95c090d8d49dde73eaa2104824bcfa5f302f96150c64b708f714187bb963f497"
+    },
+    {
+      "file": "priod-ddull.jsonl",
+      "cases": 32,
+      "sha256": "46f2c9eb162a6005569aeb31918fd68fd2611a482d74e61720c50a311c380a8c"
+    },
+    {
+      "file": "termau.jsonl",
+      "cases": 32,
+      "sha256": "cac5dbb593abb3da08bb66c98b672c2b28e6c08445328545bca2b441af8b28e8"
+    },
+    {
+      "file": "crynhoi-dyfynnu.jsonl",
+      "cases": 24,
+      "sha256": "0989851d3766e3f694e3512515aca56576a8adce8e7972aecd5daf51a98d8ef2"
+    },
+    {
+      "file": "cyfeiriadau.jsonl",
+      "cases": 32,
+      "sha256": "526ad631c67a3ea6fc6d4f7de5bf0d96c52d1a317dacdea1e8984b5ee533ec08"
+    },
+    {
+      "file": "cyfarwyddyd-cymraeg.jsonl",
+      "cases": 24,
+      "sha256": "204c1d1c35902c2b448409ba27d0b3ad1eb17e5fd2cc021ebf390a68d831adf5"
+    },
+    {
+      "file": "cyfarwyddyd-saesneg.jsonl",
+      "cases": 24,
+      "sha256": "4c4eea035822c93be6280c72ee9c5477f0ad9939869308bed83f2d60e8ded146"
+    }
+  ]
+}

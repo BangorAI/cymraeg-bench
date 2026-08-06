@@ -30,8 +30,11 @@ cyn pob ymgyrch i ganfod model sydd wedi diflannu neu allwedd sydd ar goll.
 4. Cardiff NLP: `welsh-cefr` fel tasg ddosbarthu sero-ergyd.
 5. Bangor AI: protocol cudd y gynghanedd (40 thema x 5 cynnig), drwy ddilysydd
    lleol; a Barddas fel meincnod dilysydd ar wahân, nid prawf sgwrsio cyffredinol.
+6. Archwiliad Iaith CCC: 232 o achosion mewn saith is-set ar gyfer cywiro ac
+   esbonio, priod-ddull, termau, crynhoi a dyfynnu, cyfeiriadau, ac arbrawf pâr
+   ar iaith y cyfarwyddyd.
 
-Mae hyn yn rhoi 19 cyfluniad cyhoeddus (mae ARC-Easy ac ARC-Challenge yn cael
+Mae hyn yn rhoi 26 cyfluniad cyhoeddus (mae ARC-Easy ac ARC-Challenge yn cael
 eu cyfrif ar wahân), ynghyd â'r ddau lwybr preifat.
 
 Ni chaiff y themâu cudd na data Barddas eu cynnwys yn y storfa. Rhaid eu rhoi

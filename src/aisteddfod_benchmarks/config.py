@@ -22,6 +22,7 @@ class ModelConfig:
     output_usd_per_million: float | None = None
     reasoning_effort: str | None = None
     min_output_tokens: int | None = None
+    repetition_penalty: float | None = None
 
     @property
     def resolved_base_url(self) -> str:

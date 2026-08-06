@@ -31,6 +31,7 @@ TECHIAITH_SUITES = {
     "welsh-arc-easy-mini-cy",
 }
 TRANSLATION_SUITE = "welsh-legislation-translation"
+SCORED_STATUSES = {"completed", "refusal", "invalid"}
 
 
 def build_report(database: Path, markdown: Path | None = None, csv_path: Path | None = None) -> list[dict[str, Any]]:
@@ -46,7 +47,7 @@ def build_report(database: Path, markdown: Path | None = None, csv_path: Path | 
         grouped[(row["model_id"], row["suite_id"], row["scorer"])].append(row)
     summary: list[dict[str, Any]] = []
     for (model_id, suite_id, scorer), items in grouped.items():
-        completed = [item for item in items if item["status"] in {"completed", "refusal"}]
+        completed = [item for item in items if item["status"] in SCORED_STATUSES]
         if scorer == "bleu" and completed:
             try:
                 import sacrebleu
@@ -66,6 +67,7 @@ def build_report(database: Path, markdown: Path | None = None, csv_path: Path | 
                 "metric": "BLEU" if scorer == "bleu" else "accuracy_pct",
                 "score": round(metric, 4) if metric is not None else "",
                 "completed": len(completed),
+                "invalid": sum(item["status"] == "invalid" for item in items),
                 "errors": sum(item["status"] == "error" for item in items),
                 "input_tokens": sum(item["input_tokens"] or 0 for item in items),
                 "output_tokens": sum(item["output_tokens"] or 0 for item in items),
@@ -81,6 +83,7 @@ def build_report(database: Path, markdown: Path | None = None, csv_path: Path | 
         "metric",
         "score",
         "completed",
+        "invalid",
         "errors",
         "input_tokens",
         "output_tokens",
@@ -93,13 +96,76 @@ def build_report(database: Path, markdown: Path | None = None, csv_path: Path | 
     lines = [
         "# Adroddiad AIsteddfod",
         "",
-        "| Model | Set | Mesur | Sgôr | N | Gwallau | Cost USD |",
-        "|---|---|---|---:|---:|---:|---:|",
+        "| Model | Set | Mesur | Sgôr | N | Annilys | Gwallau | Cost USD |",
+        "|---|---|---|---:|---:|---:|---:|---:|",
     ]
     for item in summary:
         lines.append(
             f"| {item['model']} | {item['suite']} | {item['metric']} | "
-            f"{item['score']} | {item['completed']} | {item['errors']} | {item['cost_usd']:.6f} |"
+            f"{item['score']} | {item['completed']} | {item['invalid']} | "
+            f"{item['errors']} | {item['cost_usd']:.6f} |"
+        )
+    markdown.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return summary
+
+
+def build_ccc_report(
+    database: Path,
+    markdown: Path | None = None,
+    csv_path: Path | None = None,
+) -> list[dict[str, Any]]:
+    connection = sqlite3.connect(database)
+    connection.row_factory = sqlite3.Row
+    rows = connection.execute(
+        """SELECT model_id, suite_id, status, scoring_json
+           FROM results
+           WHERE suite_id LIKE 'ccc-%'
+           ORDER BY model_id, suite_id, case_id, repetition"""
+    ).fetchall()
+    connection.close()
+    if not rows:
+        raise RuntimeError("Nid oes canlyniadau CCC yn y gronfa ddata")
+
+    values: dict[tuple[str, str, str], list[float]] = defaultdict(list)
+    for row in rows:
+        if row["status"] not in SCORED_STATUSES:
+            continue
+        payload = json.loads(row["scoring_json"] or "{}")
+        components = payload.get("components", {})
+        for dimension, score in components.items():
+            if isinstance(score, (int, float)):
+                values[(row["model_id"], row["suite_id"], dimension)].append(float(score))
+
+    summary = [
+        {
+            "model": model,
+            "suite": suite,
+            "dimension": dimension,
+            "score_pct": round(100 * sum(scores) / len(scores), 4),
+            "completed": len(scores),
+        }
+        for (model, suite, dimension), scores in sorted(values.items())
+    ]
+    markdown = markdown or database.with_name(f"{database.stem}-ccc.md")
+    csv_path = csv_path or database.with_name(f"{database.stem}-ccc.csv")
+    headers = ["model", "suite", "dimension", "score_pct", "completed"]
+    with csv_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=headers, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(summary)
+    lines = [
+        "# Archwiliad iaith CCC",
+        "",
+        "Caiff pob dimensiwn ei adrodd ar wahân; nid yw'r sgoriau hyn wedi'u "
+        "cynnwys yn sgôr gyffredinol CymraegBench.",
+        "",
+        "| Model | Is-set | Dimensiwn | Sgôr | N |",
+        "|---|---|---|---:|---:|",
+    ]
+    for item in summary:
+        lines.append(
+            f"| {item['model']} | {item['suite']} | {item['dimension']} | "
+            f"{item['score_pct']:.2f} | {item['completed']} |"
         )
     markdown.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return summary
@@ -143,6 +209,7 @@ def build_leaderboard(
         for row in connection.execute(
             """SELECT model_id, COUNT(*) AS result_count,
                       SUM(status = 'refusal') AS refusals,
+                      SUM(status = 'invalid') AS invalids,
                       SUM(COALESCE(cost_usd, 0)) AS cost_usd
                FROM results GROUP BY model_id"""
         )
@@ -151,6 +218,13 @@ def build_leaderboard(
 
     metadata = json.loads(run["metadata_json"])
     labels = {item["id"]: item.get("label", item["id"]) for item in metadata.get("models", [])}
+    catalog_models = final_models or metadata.get("models", [])
+    published_models = [
+        item for item in catalog_models if item.get("id") in model_stats
+    ]
+    labels.update(
+        {item["id"]: item.get("label", item["id"]) for item in published_models}
+    )
     by_model: dict[str, dict[str, float]] = defaultdict(dict)
     for item in summary:
         if item["score"] != "":
@@ -179,6 +253,8 @@ def build_leaderboard(
                 "completed": stats["result_count"],
                 "refusals": stats["refusals"],
                 "refusal_pct": round(100 * stats["refusals"] / stats["result_count"], 2),
+                "invalids": stats["invalids"],
+                "invalid_pct": round(100 * stats["invalids"] / stats["result_count"], 2),
                 "coverage_pct": 100.0,
                 "cost_usd": round(stats["cost_usd"], 6),
             }
@@ -190,7 +266,7 @@ def build_leaderboard(
     headers = [
         "rank", "model_id", "model", "overall_score", "welsh_reasoning",
         "practical_welsh", "translation_bleu", "completed", "refusals",
-        "refusal_pct", "coverage_pct", "cost_usd",
+        "refusal_pct", "invalids", "invalid_pct", "coverage_pct", "cost_usd",
     ]
     with (output_dir / "leaderboard.csv").open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=headers, lineterminator="\n")
@@ -204,14 +280,15 @@ def build_leaderboard(
         "rhesymu Cymraeg a chymedr macro naw prawf Cymraeg ymarferol. Dangosir "
         "BLEU y prawf cyfieithu deddfwriaeth ar wahân.",
         "",
-        "| Safle | Model | Sgôr cyffredinol | Rhesymu | Cymraeg ymarferol | Cyfieithu BLEU | Gwrthodiadau | Cwmpas |",
-        "|---:|---|---:|---:|---:|---:|---:|---:|",
+        "| Safle | Model | Sgôr cyffredinol | Rhesymu | Cymraeg ymarferol | Cyfieithu BLEU | Gwrthodiadau | Annilys | Cwmpas |",
+        "|---:|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for item in leaderboard:
         lines.append(
             f"| {item['rank']} | {item['model']} | {item['overall_score']:.2f} | "
             f"{item['welsh_reasoning']:.2f} | {item['practical_welsh']:.2f} | "
             f"{item['translation_bleu']:.2f} | {item['refusal_pct']:.2f}% | "
+            f"{item['invalid_pct']:.2f}% | "
             f"{item['coverage_pct']:.1f}% |"
         )
     (output_dir / "leaderboard.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -224,12 +301,14 @@ def build_leaderboard(
         "max_cases_per_suite": run["max_cases"],
         "techiaith_revision": metadata.get("techiaith_revision"),
         "models_at_run_start": metadata.get("models", []),
-        "models": final_models or metadata.get("models", []),
+        "models": published_models,
         "suites": metadata.get("suites", []),
         "status_counts": status_counts,
         "retry_policy": (
             "Rows with status=error were retried in place. Successful rows were not rerun; "
-            "the final model configuration records the higher output ceilings used for retries."
+            "the final model configuration records the higher output ceilings used for retries. "
+            "Persistent empty or length-limited model outputs are status=invalid and score zero; "
+            "infrastructure errors still block publication."
         ),
         "formula": {
             "overall_score": "50% macro mean of 9 objective suites + 50% macro mean of 9 Techiaith suites",
