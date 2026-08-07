@@ -11,6 +11,12 @@ y Gymraeg ac addysg uwch yn saith is-set ailadroddadwy. Mae'r archwiliad yn
 mesur cywiro ac esbonio ar wahân, priod-ddull, termau, crynhoi, dyfyniadau,
 cyfeiriadau ac effaith iaith y cyfarwyddyd.
 
+Mae [CymraegBench Voice v0.1](docs/VOICE.md) yn ychwanegu protocol ASR a TTS:
+WER/CER, latency a real-time factor ar gyfer trawsgrifio, ynghyd â phecyn
+promptiau CC0 a phrawf gwrando dall ar gyfer synthesis. Mae'r catalog pinned
+yn cynnwys Zipformer BangorAI a modelau Whisper, Wav2Vec2, Kaldi a Piper
+Techiaith.
+
 Gweler [PLAN.md](PLAN.md) am y protocol, tarddiad y setiau a'r rhesymau dros y
 dewisiadau sgorio. Nid yw canlyniadau rhediadau mwg yn sgoriau cyhoeddadwy:
 eu diben yw gwirio'r harnais, terfynau tocynnau a fformat atebion cyn rhediad

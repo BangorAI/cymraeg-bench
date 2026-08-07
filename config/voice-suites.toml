@@ -1,0 +1,19 @@
+[[suites]]
+id = "arfor-test-clean-v0.1"
+label = "Lleisiau ARFOR test_clean"
+task = "asr"
+manifest = "data/private/voice/arfor-test-clean.jsonl"
+language = "cy"
+source = "https://huggingface.co/datasets/cymen-arfor/lleisiau-arfor"
+revision = "0665ea3e755d9864985344512b7d346363b9b806"
+license = "CC0-1.0"
+
+[[suites]]
+id = "tts-cymraeg-v0.1"
+label = "Promptiau TTS CymraegBench v0.1"
+task = "tts"
+manifest = "data/voice/v0.1/tts-prompts.jsonl"
+language = "cy"
+source = "BangorAI/cymraeg-bench"
+revision = "voice-v0.1"
+license = "CC0-1.0"

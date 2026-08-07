@@ -18,6 +18,13 @@ from .config import (
 from .finalize import finalize_output_errors
 from .report import build_ccc_report, build_leaderboard, build_report
 from .runner import planned_calls, run_evaluation
+from .voice import (
+    build_listening_pack,
+    build_listening_report,
+    build_voice_report,
+    run_voice_benchmark,
+    validate_voice_catalog,
+)
 
 
 def _ids(value: str | None) -> list[str] | None:
@@ -145,6 +152,54 @@ def command_leaderboard(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_voice_validate(args: argparse.Namespace) -> int:
+    total, errors = validate_voice_catalog(args.models, args.suites, args.root)
+    print(f"{total} eitem yng nghatalog CymraegBench Voice")
+    for error in errors:
+        print(f"GWALL: {error}", file=sys.stderr)
+    print("Dilys." if not errors else "Methodd y dilysu.")
+    return 1 if errors else 0
+
+
+def command_voice_run(args: argparse.Namespace) -> int:
+    completed, errors = run_voice_benchmark(
+        models_path=args.models,
+        suites_path=args.suites,
+        root=args.root,
+        output=args.output,
+        model_ids=set(_ids(args.model_ids) or []) or None,
+        suite_ids=set(_ids(args.suite_ids) or []) or None,
+        max_cases=args.max_cases,
+        timeout=args.timeout,
+    )
+    print(f"{completed} achos llais wedi cwblhau; {errors} gwall")
+    print(args.output)
+    return 1 if errors else 0
+
+
+def command_voice_report(args: argparse.Namespace) -> int:
+    rows = build_voice_report(args.results, args.markdown, args.csv)
+    print(f"{len(rows)} rhes grynhoi llais")
+    print(args.markdown)
+    print(args.csv)
+    return 0
+
+
+def command_voice_listening_pack(args: argparse.Namespace) -> int:
+    ratings, key = build_listening_pack(args.results, args.output_dir, args.seed)
+    print(ratings)
+    print(f"Cadwch yr allwedd ar wahân: {key}")
+    return 0
+
+
+def command_voice_listening_report(args: argparse.Namespace) -> int:
+    rows = build_listening_report(args.ratings, args.key, args.markdown, args.csv)
+    print(f"{len(rows)} model yn yr adroddiad gwrando")
+    print(args.markdown)
+    print(args.csv)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Meincnodau Cymraeg AIsteddfod")
     parser.add_argument(
@@ -200,6 +255,57 @@ def build_parser() -> argparse.ArgumentParser:
     leaderboard.add_argument("database", type=Path)
     leaderboard.add_argument("--output-dir", type=Path)
     leaderboard.set_defaults(func=command_leaderboard)
+
+    voice = subparsers.add_parser("voice", help="Meincnodi ASR a TTS Cymraeg")
+    voice_subparsers = voice.add_subparsers(dest="voice_command", required=True)
+
+    voice_validate = voice_subparsers.add_parser("validate", help="Dilysu catalog llais")
+    voice_validate.add_argument("--root", type=Path, default=project_root())
+    voice_validate.add_argument(
+        "--models", type=Path, default=project_root() / "config" / "voice-models.toml"
+    )
+    voice_validate.add_argument(
+        "--suites", type=Path, default=project_root() / "config" / "voice-suites.toml"
+    )
+    voice_validate.set_defaults(func=command_voice_validate)
+
+    voice_run = voice_subparsers.add_parser("run", help="Rhedeg ASR/TTS drwy addaswyr gorchymyn")
+    voice_run.add_argument("--root", type=Path, default=project_root())
+    voice_run.add_argument(
+        "--models", type=Path, default=project_root() / "config" / "voice-models.toml"
+    )
+    voice_run.add_argument(
+        "--suites", type=Path, default=project_root() / "config" / "voice-suites.toml"
+    )
+    voice_run.add_argument("--model-ids", help="IDs model wedi'u gwahanu â choma")
+    voice_run.add_argument("--suite-ids", help="IDs set wedi'u gwahanu â choma")
+    voice_run.add_argument("--max-cases", type=int)
+    voice_run.add_argument("--timeout", type=float, default=600.0)
+    voice_run.add_argument("--output", type=Path, required=True)
+    voice_run.set_defaults(func=command_voice_run)
+
+    voice_report = voice_subparsers.add_parser("report", help="Creu adroddiad WER/CER/RTF")
+    voice_report.add_argument("results", type=Path)
+    voice_report.add_argument("--markdown", type=Path, required=True)
+    voice_report.add_argument("--csv", type=Path, required=True)
+    voice_report.set_defaults(func=command_voice_report)
+
+    listening_pack = voice_subparsers.add_parser(
+        "listening-pack", help="Creu pecyn WAV dall a thaflen sgorio TTS"
+    )
+    listening_pack.add_argument("results", type=Path)
+    listening_pack.add_argument("--output-dir", type=Path, required=True)
+    listening_pack.add_argument("--seed", type=int, default=1)
+    listening_pack.set_defaults(func=command_voice_listening_pack)
+
+    listening_report = voice_subparsers.add_parser(
+        "listening-report", help="Agor yr allwedd a chyfuno sgoriau gwrandawyr"
+    )
+    listening_report.add_argument("--ratings", type=Path, nargs="+", required=True)
+    listening_report.add_argument("--key", type=Path, required=True)
+    listening_report.add_argument("--markdown", type=Path, required=True)
+    listening_report.add_argument("--csv", type=Path, required=True)
+    listening_report.set_defaults(func=command_voice_listening_report)
     return parser
 
 

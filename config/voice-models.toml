@@ -1,0 +1,83 @@
+# Mae pob addasydd yn broses ar wahân fel bod modelau â dibyniaethau sy'n
+# gwrthdaro yn gallu rhedeg yn eu hamgylcheddau eu hunain. Dewiswch fodelau'n
+# benodol gyda `voice run --model-ids ...` neu trowch `enabled` ymlaen.
+
+[[models]]
+id = "bangorai-zipformer-cy"
+label = "BangorAI Zipformer Cymraeg (sherpa-onnx)"
+task = "asr"
+enabled = false
+command = ["python", "{root}/adapters/sherpa_onnx_asr.py", "--model-dir", "{model_dir}", "--audio", "{audio}"]
+source = "BangorAI/zipformer-cymraeg"
+revision = "voice-v0.1"
+license = "Apache-2.0; pwysau wedi'u hyfforddi ar ddata CC0"
+[models.variables]
+model_dir = "${CYMRAEG_ZIPFORMER_DIR}"
+
+[[models]]
+id = "techiaith-whisper-large-v3-verbatim"
+label = "Techiaith Whisper Large v3 Verbatim CY/EN"
+task = "asr"
+enabled = false
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/whisper-large-v3-ft-verbatim-cy-en", "--revision", "357e1784586765174eeb86731faaadf95c730b32", "--language", "cy", "--audio", "{audio}"]
+source = "https://huggingface.co/techiaith/whisper-large-v3-ft-verbatim-cy-en"
+revision = "357e1784586765174eeb86731faaadf95c730b32"
+license = "Apache-2.0"
+
+[[models]]
+id = "techiaith-wav2vec2-btb-cv"
+label = "Techiaith Wav2Vec2 BTB/CV"
+task = "asr"
+enabled = false
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/wav2vec2-btb-cv-ft-cv-cy", "--revision", "78e4da6e30fa3bd6e3db8cde07f28df950d8c2e3", "--audio", "{audio}"]
+source = "https://huggingface.co/techiaith/wav2vec2-btb-cv-ft-cv-cy"
+revision = "78e4da6e30fa3bd6e3db8cde07f28df950d8c2e3"
+license = "Apache-2.0"
+
+[[models]]
+id = "techiaith-kaldi-cy"
+label = "Techiaith Kaldi/Vosk Cymraeg"
+task = "asr"
+enabled = false
+command = ["python", "{root}/adapters/vosk_asr.py", "--model-dir", "{model_dir}", "--audio", "{audio}"]
+source = "https://huggingface.co/techiaith/kaldi-cy"
+revision = "b39592897b404135a72ad7d9984032d0b6f13c11"
+license = "CC-BY-NC-3.0"
+[models.variables]
+model_dir = "${TECHIAITH_KALDI_DIR}"
+
+[[models]]
+id = "techiaith-cy-gb-bu-tts"
+label = "Techiaith cy_GB-bu_tts"
+task = "tts"
+enabled = false
+command = ["python", "{root}/adapters/piper_tts.py", "--model", "{model}", "--text-file", "{text_file}", "--output-wav", "{output_wav}"]
+source = "https://huggingface.co/techiaith/cy_GB-bu_tts"
+revision = "11cd29cd8680e3c13cb07a826e66138efa9ccb30"
+license = "CC0-1.0"
+[models.variables]
+model = "${TECHIAITH_CY_TTS_MODEL}"
+
+[[models]]
+id = "techiaith-cy-en-bu-tts-cc0"
+label = "Techiaith Bangor CY/EN TTS (CC0)"
+task = "tts"
+enabled = false
+command = ["python", "{root}/adapters/bangor_piper_tts.py", "--model", "{model}", "--speaker", "0", "--text-file", "{text_file}", "--output-wav", "{output_wav}"]
+source = "https://huggingface.co/techiaith/cy_en_GB-bu_tts"
+revision = "b3bc6d0c4ea18072a1b9ee3758d83eebf060c398"
+license = "CC0-1.0 (ffeil -cc0-medium)"
+[models.variables]
+model = "${TECHIAITH_CY_EN_TTS_CC0_MODEL}"
+
+[[models]]
+id = "piper-gwryw-gogleddol"
+label = "Piper gwryw_gogleddol medium"
+task = "tts"
+enabled = false
+command = ["python", "{root}/adapters/piper_tts.py", "--model", "{model}", "--text-file", "{text_file}", "--output-wav", "{output_wav}"]
+source = "https://huggingface.co/rhasspy/piper-voices"
+revision = "49c0e1ed6ea1d42176c56693fb30317853874a9a"
+license = "MIT; gweler trwydded data'r llais"
+[models.variables]
+model = "${PIPER_CY_MODEL}"
