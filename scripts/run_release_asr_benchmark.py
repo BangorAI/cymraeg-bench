@@ -23,6 +23,7 @@ SUITE_ID = "arfor-test-clean-v0.1"
 EXPECTED_CASES = 3445
 UV_VERSION = "0.5.29"
 SPECIALIZED_RUNTIMES = {"whisper.cpp", "vosk"}
+STATUS_SCHEMA = "voice-release-benchmark-status-v1"
 
 
 def probe_filename(siblings: list[object]) -> str:
@@ -71,6 +72,7 @@ class ReleaseBenchmark:
 
     def write_status(self, stage: str, **extra: object) -> None:
         payload = {
+            "schema_version": STATUS_SCHEMA,
             "updated_at": utc_now(),
             "stage": stage,
             "suite": SUITE_ID,

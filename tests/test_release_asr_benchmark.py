@@ -178,6 +178,7 @@ def test_access_gate_can_defer_missing_model_without_sleep(tmp_path: Path) -> No
 
     assert benchmark.wait_for_model_access(allow_deferred=True) == failures
     status = module.json.loads(benchmark.status.read_text(encoding="utf-8"))
+    assert status["schema_version"] == "voice-release-benchmark-status-v1"
     assert status["stage"] == "model_access_deferred"
     assert status["accessible_techiaith_models"] == 18
 
