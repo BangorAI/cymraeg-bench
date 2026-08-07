@@ -143,7 +143,13 @@ class ReleaseBenchmark:
         candidates: list[Path] = []
         if self.args.uv is not None:
             candidates.append(self.args.uv.expanduser())
-        candidates.append(self.args.python.resolve().parent / "uv")
+        # Peidio â defnyddio resolve() yma: mae python mewn venv fel arfer yn
+        # symlink i /usr/bin/python, ond mae'r uv perthnasol wrth ymyl y
+        # symlink yn <venv>/bin.
+        python_path = self.args.python.expanduser()
+        if not python_path.is_absolute():
+            python_path = (Path.cwd() / python_path).absolute()
+        candidates.append(python_path.parent / "uv")
         on_path = shutil.which("uv")
         if on_path:
             candidates.append(Path(on_path))

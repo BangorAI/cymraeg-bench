@@ -169,8 +169,10 @@ def test_resolve_uv_prefers_verified_binary_beside_python(tmp_path: Path) -> Non
     module = load_release_module()
     binary_dir = tmp_path / "bin"
     binary_dir.mkdir()
+    system_python = tmp_path / "system-python"
+    system_python.touch()
     python = binary_dir / "python"
-    python.touch()
+    python.symlink_to(system_python)
     uv = binary_dir / "uv"
     uv.write_text("#!/bin/sh\necho 'uv 0.5.29'\n", encoding="utf-8")
     uv.chmod(0o755)
