@@ -30,6 +30,7 @@ def benchmark_args(**updates: object) -> Namespace:
         "arfor_parquet": ROOT / "missing-arfor.parquet",
         "dewi_model_dir": None,
         "python": Path("/usr/bin/python3"),
+        "install_python": None,
         "uv": None,
         "device": "cuda:0",
         "timeout": 600.0,
@@ -350,3 +351,61 @@ def test_linux_sherpa_core_is_directly_locked_for_require_hashes() -> None:
     assert "sherpa-onnx-core==1.13.4 ; sys_platform == 'linux'" in project
     assert 'name = "sherpa-onnx-core"' in lock
     assert "sha256:367aa06cee90b3fd7959d4e071d6fc821710b859af399b4987e5c3119ee6ae2a" in lock
+
+
+def test_locked_runtime_uses_separate_builder_without_changing_model_python(
+    tmp_path: Path,
+) -> None:
+    module = load_release_module()
+    runtime_python = tmp_path / "runtime" / "python"
+    builder_python = tmp_path / "builder" / "python"
+    benchmark = module.ReleaseBenchmark(benchmark_args(
+        python=runtime_python,
+        install_python=builder_python,
+    ))
+    benchmark.root = tmp_path
+    benchmark.target = tmp_path / "target"
+    (tmp_path / "uv.lock").write_text("lock\n")
+    requirements = tmp_path / "runs" / "voice-release-requirements.txt"
+    requirements.parent.mkdir()
+    requirements.write_text("# locked\n")
+    uv = tmp_path / "uv"
+    uv.touch()
+    benchmark.resolve_uv = lambda: uv
+    benchmark.python_abi = lambda python: (3, 12)
+    commands = []
+    benchmark.run = lambda command, *, env=None, cwd=None: commands.append(command)
+
+    benchmark.install_runtime()
+
+    pip_command = next(command for command in commands if "pip" in command)
+    assert pip_command[0] == str(builder_python)
+    assert benchmark.args.python == runtime_python
+
+
+def test_locked_runtime_rejects_builder_with_different_python_abi(
+    tmp_path: Path,
+) -> None:
+    module = load_release_module()
+    runtime_python = tmp_path / "runtime-python"
+    builder_python = tmp_path / "builder-python"
+    benchmark = module.ReleaseBenchmark(benchmark_args(
+        python=runtime_python,
+        install_python=builder_python,
+    ))
+    benchmark.root = tmp_path
+    benchmark.target = tmp_path / "target"
+    (tmp_path / "uv.lock").write_text("lock\n")
+    requirements = tmp_path / "runs" / "voice-release-requirements.txt"
+    requirements.parent.mkdir()
+    requirements.write_text("# locked\n")
+    uv = tmp_path / "uv"
+    uv.touch()
+    benchmark.resolve_uv = lambda: uv
+    benchmark.python_abi = lambda python: (
+        (3, 13) if python == builder_python else (3, 12)
+    )
+    benchmark.run = lambda command, *, env=None, cwd=None: None
+
+    with pytest.raises(RuntimeError, match="ABI Python installer"):
+        benchmark.install_runtime()

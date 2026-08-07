@@ -170,6 +170,21 @@ class ReleaseBenchmark:
             )
         return selected
 
+    @staticmethod
+    def python_abi(python: Path) -> tuple[int, int]:
+        output = subprocess.run(
+            [
+                str(python),
+                "-c",
+                "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        major, minor = output.split(".", 1)
+        return int(major), int(minor)
+
     def wait_for_release(self) -> dict[str, object]:
         self.write_status("waiting_for_release_bundle")
         last_report = 0.0
@@ -283,8 +298,15 @@ class ReleaseBenchmark:
                 str(requirements),
             ])
             self.target.mkdir(parents=True, exist_ok=True)
+            installer = self.args.install_python or self.args.python
+            runtime_abi = self.python_abi(self.args.python)
+            installer_abi = self.python_abi(installer)
+            if installer_abi != runtime_abi:
+                raise RuntimeError(
+                    f"ABI Python installer {installer_abi} != runtime {runtime_abi}"
+                )
             self.run([
-                str(self.args.python),
+                str(installer),
                 "-m",
                 "pip",
                 "install",
@@ -664,6 +686,14 @@ def main() -> None:
     parser.add_argument("--arfor-parquet", type=Path, required=True)
     parser.add_argument("--dewi-model-dir", type=Path)
     parser.add_argument("--python", type=Path, default=Path(sys.executable))
+    parser.add_argument(
+        "--install-python",
+        type=Path,
+        help=(
+            "Python ABI-compatible â headers i adeiladu wheels; mae --python "
+            "yn parhau'n runtime model (Torch/CUDA)"
+        ),
+    )
     parser.add_argument("--uv", type=Path)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--timeout", type=float, default=600.0)
