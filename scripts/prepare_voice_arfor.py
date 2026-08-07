@@ -14,13 +14,23 @@ from aisteddfod_benchmarks.voice import normalize_transcript
 
 REVISION = "0665ea3e755d9864985344512b7d346363b9b806"
 EXPECTED_SHA256 = "9f21512368e70237ad96cd938f4e352ef5ea99a403f049b5ef67813a67633d06"
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for block in iter(lambda: source.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--parquet", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, default=Path("data/private/voice"))
     parser.add_argument("--limit", type=int, default=0)
     args = parser.parse_args()
-    digest = hashlib.sha256(args.parquet.read_bytes()).hexdigest()
+    digest = sha256_file(args.parquet)
     if digest != EXPECTED_SHA256:
         raise SystemExit(f"SHA-256 anghywir: {digest}")
     import pyarrow.parquet as parquet

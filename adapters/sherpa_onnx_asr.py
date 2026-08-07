@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import wave
 from pathlib import Path
@@ -15,9 +16,13 @@ def main() -> None:
     parser.add_argument(
         "--decoding-method",
         choices=("greedy_search", "modified_beam_search"),
-        default="greedy_search",
+        default=os.getenv("CYMRAEG_ZIPFORMER_DECODING_METHOD", "greedy_search"),
     )
-    parser.add_argument("--max-active-paths", type=int, default=4)
+    parser.add_argument(
+        "--max-active-paths",
+        type=int,
+        default=int(os.getenv("CYMRAEG_ZIPFORMER_MAX_ACTIVE_PATHS", "4")),
+    )
     parser.add_argument("--num-threads", type=int, default=2)
     parser.add_argument("--serve-jsonl", action="store_true")
     args = parser.parse_args()

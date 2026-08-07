@@ -34,6 +34,9 @@ amgylchedd ar wahân.
 Mae addasydd sherpa-onnx hefyd yn derbyn `--decoding-method` a
 `--max-active-paths`, fel bod greedy a modified beam search yn gallu cael eu
 cymharu heb newid y pwysau.
+Heb flags, mae'n darllen `CYMRAEG_ZIPFORMER_DECODING_METHOD` a
+`CYMRAEG_ZIPFORMER_MAX_ACTIVE_PATHS`; mae'r finalizer benchmark yn eu gosod o'r
+dev lock fel bod y CLI a'r porwr yn defnyddio'r un decoder.
 
 Mae resumability yn cynnwys revision y model yn yr allwedd checkpoint. Felly,
 os yw ID rhesymegol yn aros yr un fath ond bod y SHA yn newid, caiff pob achos
@@ -126,3 +129,23 @@ Mae extraction y tar Kaldi yn gwrthod path traversal, links a device nodes.
 Cedwir `assets.json` ochr yn ochr â'r models i gofnodi SHA a llwybr pob asset;
 mae `models/`, `downloads/`, `vendor/` a'r dependency targets lleol wedi'u
 hepgor o Git.
+
+Ar ôl i'r rheolydd hyfforddi gloi'r checkpoint a'r decoder gorau ar y set dev,
+gellir gadael y goruchwyliwr release yn rhedeg. Mae'n aros am y bundle ONNX/WASM,
+yn creu runtime Python o'r `uv.lock`, yn paratoi'r 19 model Techiaith pinned,
+yn ail-greu'r manifest ARFOR 3,445 achos, ac yn rhedeg un model ar y tro. Mae'r
+JSONL yn checkpointio pob achos, felly gellir ailgychwyn yr un gorchymyn:
+
+```bash
+python scripts/run_release_asr_benchmark.py \
+  --release-status /path/to/exp/release-finalization-status.json \
+  --zipformer-root /path/to/zipformer-cymraeg \
+  --arfor-parquet /path/to/test_clean-00000-of-00001.parquet \
+  --dewi-model-dir /path/to/dewi-kaldi-2606 \
+  --python /path/to/zipformer-cymraeg/.venv/bin/python
+```
+
+Ni fydd y gate yn pasio oni bai bod BangorAI wedi cwblhau 3,445/3,445 ac â WER
+is na'r gorau o bob un o'r 19 model Techiaith ar yr un manifest. Cedwir statws
+peiriant-ddarllenadwy yn `runs/voice-v0.1-status.json` a'r leaderboard o dan
+`results/voice-v0.1/`.
