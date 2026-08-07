@@ -103,6 +103,36 @@ class StorageReportTests(unittest.TestCase):
                 {"cywiriad", "categori", "rheol", "esboniad"},
             )
 
+    def test_model_context_limit_becomes_scored_invalid(self):
+        with tempfile.TemporaryDirectory() as directory:
+            database = Path(directory) / "context.sqlite3"
+            store = Storage(database)
+            store.start_run("r", "2026-08-07T00:00:00Z", 1, None, {})
+            store.save_result(
+                {
+                    "run_id": "r", "model_id": "m", "suite_id": "welsh-cefr",
+                    "case_id": "c", "repetition": 1, "status": "error",
+                    "scorer": "exact", "system_prompt": "system",
+                    "user_prompt": "user", "expected": "C1", "prediction": None,
+                    "score": None, "scoring_json": "{}", "provider_model": None,
+                    "provider_response_json": None, "input_tokens": None,
+                    "output_tokens": None, "cost_usd": None, "latency_ms": None,
+                    "stop_reason": None,
+                    "error": "This model's maximum context length is 2048 tokens",
+                }
+            )
+            store.finish_run("r", "completed_with_errors")
+            store.close()
+
+            self.assertEqual(finalize_output_errors(database), (1, 0))
+            connection = sqlite3.connect(database)
+            status, score, run_status = connection.execute(
+                """SELECT results.status, results.score, runs.status
+                   FROM results JOIN runs USING (run_id)"""
+            ).fetchone()
+            connection.close()
+            self.assertEqual((status, score, run_status), ("invalid", 0.0, "completed"))
+
 
 if __name__ == "__main__":
     unittest.main()

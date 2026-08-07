@@ -22,7 +22,8 @@ class ConfigTests(unittest.TestCase):
             {
                 "gpt-5-6-sol", "claude-opus-4-8", "claude-fable-5", "grok-4-20",
                 "kimi-k3", "glm-5-2", "deepseek-v4-flash-0731", "jupiter-n-120b",
-                "caernarfon-3b", "mwydryn", "bangor-mistral-cymraeg-v2",
+                "caernarfon-3b", "caernarfon-3b-cymraeg-instruct-v0-1",
+                "mwydryn", "bangor-mistral-cymraeg-v2",
                 "mwydryn-7b-v2",
                 "techiaith-llama-3-2-1b-sft",
             },
@@ -55,6 +56,12 @@ class ConfigTests(unittest.TestCase):
         )
         self.assertEqual(techiaith_sft.min_output_tokens, 512)
         self.assertEqual(techiaith_sft.repetition_penalty, 1.15)
+        jupiter = select_models(models, ["jupiter-n-120b"])[0]
+        self.assertEqual(jupiter.min_output_tokens, 512)
+        caernarfon_instruct = select_models(
+            models, ["caernarfon-3b-cymraeg-instruct-v0-1"]
+        )[0]
+        self.assertEqual(caernarfon_instruct.min_output_tokens, 512)
 
     def test_ccc_files_match_catalog_counts_and_have_unique_ids(self):
         suites, revision = load_suites(ROOT / "config")

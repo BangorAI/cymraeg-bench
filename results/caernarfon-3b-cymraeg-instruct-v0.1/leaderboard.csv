@@ -1,0 +1,2 @@
+rank,model_id,model,overall_score,welsh_reasoning,practical_welsh,translation_bleu,completed,refusals,refusal_pct,invalids,invalid_pct,coverage_pct,cost_usd
+1,caernarfon-3b-cymraeg-instruct-v0-1,Caernarfon 3B Cymraeg Instruct v0.1,10.83,16.8,4.86,22.0,33657,0,0.0,1184,3.52,100.0,0

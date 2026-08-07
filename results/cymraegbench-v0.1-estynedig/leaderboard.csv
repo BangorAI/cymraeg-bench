@@ -6,8 +6,9 @@ rank,model_id,model,overall_score,welsh_reasoning,practical_welsh,translation_bl
 5,glm-5-2,GLM-5.2,68.42,68.62,68.22,57.07,1821,0,0.0,0,0.0,100.0,0.229276
 6,deepseek-v4-flash-0731,DeepSeek V4-Flash-0731,61.63,63.14,60.11,64.95,1821,0,0.0,0,0.0,100.0,0.030307
 7,grok-4-20,Grok 4.20,58.13,62.38,53.89,64.2,1821,0,0.0,0,0.0,100.0,0.366184
-8,mwydryn-7b-v2,BangorAI Mwydryn 7B fersiwn 2,30.37,39.96,20.78,41.89,2053,0,0.0,17,0.83,100.0,0
-9,bangor-mistral-cymraeg-v2,BangorAI Mistral-7B-Cymraeg-Welsh-v2,30.09,40.85,19.33,31.39,2053,0,0.0,10,0.49,100.0,0
-10,mwydryn,Mwydryn,26.9,36.47,17.33,9.11,2053,0,0.0,58,2.83,100.0,0
-11,techiaith-llama-3-2-1b-sft,Techiaith Llama 3.2 1B Welsh SFT,9.87,17.18,2.56,1.05,2053,0,0.0,709,34.53,100.0,0
-12,caernarfon-3b,Caernarfon 3B,0.0,0.0,0.0,14.89,2053,0,0.0,1942,94.59,100.0,0
+8,jupiter-n-120b,Jupiter-N-120B,48.87,52.7,45.04,43.85,33657,0,0.0,123,0.37,100.0,0
+9,mwydryn-7b-v2,BangorAI Mwydryn 7B fersiwn 2,30.37,39.96,20.78,41.89,2053,0,0.0,17,0.83,100.0,0
+10,bangor-mistral-cymraeg-v2,BangorAI Mistral-7B-Cymraeg-Welsh-v2,30.09,40.85,19.33,31.39,2053,0,0.0,10,0.49,100.0,0
+11,mwydryn,Mwydryn,26.9,36.47,17.33,9.11,2053,0,0.0,58,2.83,100.0,0
+12,caernarfon-3b-cymraeg-instruct-v0-1,Caernarfon 3B Cymraeg Instruct v0.1,10.83,16.8,4.86,22.0,33657,0,0.0,1184,3.52,100.0,0
+13,techiaith-llama-3-2-1b-sft,Techiaith Llama 3.2 1B Welsh SFT,9.87,17.18,2.56,1.05,2053,0,0.0,709,34.53,100.0,0

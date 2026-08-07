@@ -67,8 +67,9 @@ JSON. Nid yw'r prosiect yn dyblygu cynnwys cudd na thrwyddedig.
 
 Mae'r canlyniadau cyhoeddus yn cynnwys y
 [sgorfwrdd saith-model gwreiddiol](results/cymraegbench-v0.1/leaderboard.md)
-a'r [sgorfwrdd estynedig 12-model](results/cymraegbench-v0.1-estynedig/README.md),
-sy'n ychwanegu pum model agored a redwyd yn lleol.
+a'r [sgorfwrdd estynedig 13-model](results/cymraegbench-v0.1-estynedig/README.md).
+Mae'r fersiwn estynedig yn cynnwys rhediadau set lawn Jupiter-N-120B a
+Chaernarfon 3B Cymraeg Instruct v0.1, yn ogystal â'r samplau blaenorol.
 
 Mae pob rhediad yn creu `runs/<run-id>.sqlite3`; gall `report` greu Markdown a
 CSV. Mae'r gronfa'n cadw'r prompt, ateb, cyfeirnod, sgôr, tocynnau, cost,

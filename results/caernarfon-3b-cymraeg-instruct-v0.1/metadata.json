@@ -1,0 +1,82 @@
+{
+  "run_id": "caernarfon-3b-cymraeg-instruct-v0.1",
+  "created_at": "2026-08-06T16:16:15.444669+00:00",
+  "status": "completed",
+  "seed": 1,
+  "max_cases_per_suite": null,
+  "techiaith_revision": "47839d2147c97fd2f10a52dd36751608e5fa36bf",
+  "models_at_run_start": [
+    {
+      "id": "caernarfon-3b-cymraeg-instruct-v0-1",
+      "label": "Caernarfon 3B Cymraeg Instruct v0.1",
+      "provider": "openai_compatible",
+      "api_model": "caernarfon-3b-cymraeg-instruct-v0.1",
+      "api_key_env": "CAERNARFON_API_KEY",
+      "base_url": "http://127.0.0.1:8002/v1",
+      "enabled": false,
+      "tier": "scoreboard",
+      "base_url_env": "CAERNARFON_API_BASE",
+      "input_usd_per_million": null,
+      "output_usd_per_million": null,
+      "reasoning_effort": null,
+      "min_output_tokens": null,
+      "repetition_penalty": null
+    }
+  ],
+  "models": [
+    {
+      "id": "caernarfon-3b-cymraeg-instruct-v0-1",
+      "label": "Caernarfon 3B Cymraeg Instruct v0.1",
+      "provider": "openai_compatible",
+      "api_model": "caernarfon-3b-cymraeg-instruct-v0.1",
+      "api_key_env": "CAERNARFON_API_KEY",
+      "base_url": "http://127.0.0.1:8002/v1",
+      "enabled": false,
+      "tier": "scoreboard",
+      "base_url_env": "CAERNARFON_API_BASE",
+      "input_usd_per_million": null,
+      "output_usd_per_million": null,
+      "reasoning_effort": null,
+      "min_output_tokens": 512,
+      "repetition_penalty": null
+    }
+  ],
+  "suites": [
+    "arc-welsh-easy",
+    "arc-welsh-challenge",
+    "piqa-welsh",
+    "truthfulqa-welsh-mc1",
+    "xnli-brit-cy",
+    "mgsm-cy",
+    "copa-cy",
+    "wnli-cy",
+    "welsh-cefr",
+    "welsh-lexicon",
+    "welsh-grammar",
+    "welsh-yes-no",
+    "welsh-obscenities",
+    "welsh-bilingual-placenames",
+    "welsh-legislation-translation",
+    "welsh-registers",
+    "welsh-mmlu-lite",
+    "welsh-toxigen",
+    "welsh-arc-easy-mini-cy",
+    "ccc-cywiro-esbonio",
+    "ccc-priod-ddull",
+    "ccc-termau",
+    "ccc-crynhoi-dyfynnu",
+    "ccc-cyfeiriadau",
+    "ccc-cyfarwyddyd-cymraeg",
+    "ccc-cyfarwyddyd-saesneg"
+  ],
+  "status_counts": {
+    "completed": 32473,
+    "invalid": 1184
+  },
+  "retry_policy": "Defnyddiwyd isafswm o 512 tocyn wrth ailbrofi allbynnau byr. Ar gyfer 11 prompt CEFR a oedd yn rhy hir i gyd-destun 2,048 y model, gostyngwyd y cap i 256 ac yna i 8; cofnodwyd unrhyw allbwn a dorrodd y terfyn neu unrhyw orlif cyd-destun fel invalid a sgôr sero.",
+  "formula": {
+    "overall_score": "50% macro mean of 9 objective suites + 50% macro mean of 9 Techiaith suites",
+    "translation": "Corpus BLEU, reported separately"
+  },
+  "context_limit_policy": "Mae terfyn cyd-destun brodorol Caernarfon yn 2,048. Cafodd tri achos CEFR a oedd yn fwy na'r terfyn hyd yn oed gydag 8 tocyn allbwn eu cofnodi'n invalid, nid yn wall seilwaith."
+}

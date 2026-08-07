@@ -1,0 +1,81 @@
+{
+  "run_id": "jupiter-spark-bf16-v0.1",
+  "created_at": "2026-08-06T16:15:28.795018+00:00",
+  "status": "completed",
+  "seed": 1,
+  "max_cases_per_suite": null,
+  "techiaith_revision": "47839d2147c97fd2f10a52dd36751608e5fa36bf",
+  "models_at_run_start": [
+    {
+      "id": "jupiter-n-120b",
+      "label": "Jupiter-N-120B",
+      "provider": "openai_compatible",
+      "api_model": "Jupiter-N-120B-BF16",
+      "api_key_env": "JUPITER_API_KEY",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "enabled": false,
+      "tier": "scoreboard",
+      "base_url_env": "JUPITER_API_BASE",
+      "input_usd_per_million": null,
+      "output_usd_per_million": null,
+      "reasoning_effort": null,
+      "min_output_tokens": null,
+      "repetition_penalty": null
+    }
+  ],
+  "models": [
+    {
+      "id": "jupiter-n-120b",
+      "label": "Jupiter-N-120B",
+      "provider": "openai_compatible",
+      "api_model": "Jupiter-N-120B-BF16",
+      "api_key_env": "JUPITER_API_KEY",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "enabled": false,
+      "tier": "scoreboard",
+      "base_url_env": "JUPITER_API_BASE",
+      "input_usd_per_million": null,
+      "output_usd_per_million": null,
+      "reasoning_effort": null,
+      "min_output_tokens": 512,
+      "repetition_penalty": null
+    }
+  ],
+  "suites": [
+    "arc-welsh-easy",
+    "arc-welsh-challenge",
+    "piqa-welsh",
+    "truthfulqa-welsh-mc1",
+    "xnli-brit-cy",
+    "mgsm-cy",
+    "copa-cy",
+    "wnli-cy",
+    "welsh-cefr",
+    "welsh-lexicon",
+    "welsh-grammar",
+    "welsh-yes-no",
+    "welsh-obscenities",
+    "welsh-bilingual-placenames",
+    "welsh-legislation-translation",
+    "welsh-registers",
+    "welsh-mmlu-lite",
+    "welsh-toxigen",
+    "welsh-arc-easy-mini-cy",
+    "ccc-cywiro-esbonio",
+    "ccc-priod-ddull",
+    "ccc-termau",
+    "ccc-crynhoi-dyfynnu",
+    "ccc-cyfeiriadau",
+    "ccc-cyfarwyddyd-cymraeg",
+    "ccc-cyfarwyddyd-saesneg"
+  ],
+  "status_counts": {
+    "completed": 33534,
+    "invalid": 123
+  },
+  "retry_policy": "Rows with status=error were retried in place. Successful rows were not rerun; the final model configuration records the higher output ceilings used for retries. Persistent empty or length-limited model outputs are status=invalid and score zero; infrastructure errors still block publication.",
+  "formula": {
+    "overall_score": "50% macro mean of 9 objective suites + 50% macro mean of 9 Techiaith suites",
+    "translation": "Corpus BLEU, reported separately"
+  }
+}

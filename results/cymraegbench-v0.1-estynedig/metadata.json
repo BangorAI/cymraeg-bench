@@ -1,204 +1,10 @@
 {
   "run_id": "cymraegbench-v0.1-estynedig",
-  "created_at": "2026-08-06T13:24:36.714602+00:00",
+  "created_at": "2026-08-07T03:20:48.288Z",
   "status": "completed",
   "seed": 1,
-  "max_cases_per_suite": 100,
+  "max_cases_per_suite": "cymysg: hyd at 100 ar gyfer yr 11 model blaenorol; set lawn ar gyfer Jupiter a Caernarfon Cymraeg Instruct",
   "techiaith_revision": "47839d2147c97fd2f10a52dd36751608e5fa36bf",
-  "models_at_run_start": [
-    {
-      "id": "gpt-5-6-sol",
-      "label": "GPT-5.6 Sol",
-      "provider": "openai",
-      "api_model": "gpt-5.6-sol",
-      "api_key_env": "OPENAI_API_KEY",
-      "base_url": "https://api.openai.com/v1",
-      "enabled": true,
-      "tier": "scoreboard",
-      "base_url_env": null,
-      "input_usd_per_million": 5.0,
-      "output_usd_per_million": 30.0,
-      "reasoning_effort": "none",
-      "min_output_tokens": null,
-      "repetition_penalty": null
-    },
-    {
-      "id": "claude-opus-4-8",
-      "label": "Claude Opus 4.8",
-      "provider": "anthropic",
-      "api_model": "claude-opus-4-8",
-      "api_key_env": "ANTHROPIC_API_KEY",
-      "base_url": "https://api.anthropic.com/v1",
-      "enabled": true,
-      "tier": "scoreboard",
-      "base_url_env": null,
-      "input_usd_per_million": 5.0,
-      "output_usd_per_million": 25.0,
-      "reasoning_effort": null,
-      "min_output_tokens": 512,
-      "repetition_penalty": null
-    },
-    {
-      "id": "claude-fable-5",
-      "label": "Claude Fable 5",
-      "provider": "anthropic",
-      "api_model": "claude-fable-5",
-      "api_key_env": "ANTHROPIC_API_KEY",
-      "base_url": "https://api.anthropic.com/v1",
-      "enabled": true,
-      "tier": "scoreboard",
-      "base_url_env": null,
-      "input_usd_per_million": 10.0,
-      "output_usd_per_million": 50.0,
-      "reasoning_effort": "low",
-      "min_output_tokens": 512,
-      "repetition_penalty": null
-    },
-    {
-      "id": "grok-4-20",
-      "label": "Grok 4.20",
-      "provider": "openrouter",
-      "api_model": "x-ai/grok-4.20",
-      "api_key_env": "OPENROUTER_API_KEY",
-      "base_url": "https://openrouter.ai/api/v1",
-      "enabled": true,
-      "tier": "scoreboard",
-      "base_url_env": null,
-      "input_usd_per_million": 1.25,
-      "output_usd_per_million": 2.5,
-      "reasoning_effort": "none",
-      "min_output_tokens": 512,
-      "repetition_penalty": null
-    },
-    {
-      "id": "kimi-k3",
-      "label": "Kimi K3",
-      "provider": "openrouter",
-      "api_model": "moonshotai/kimi-k3",
-      "api_key_env": "OPENROUTER_API_KEY",
-      "base_url": "https://openrouter.ai/api/v1",
-      "enabled": true,
-      "tier": "scoreboard",
-      "base_url_env": null,
-      "input_usd_per_million": 3.0,
-      "output_usd_per_million": 15.0,
-      "reasoning_effort": "none",
-      "min_output_tokens": 256,
-      "repetition_penalty": null
-    },
-    {
-      "id": "glm-5-2",
-      "label": "GLM-5.2",
-      "provider": "openrouter",
-      "api_model": "z-ai/glm-5.2",
-      "api_key_env": "OPENROUTER_API_KEY",
-      "base_url": "https://openrouter.ai/api/v1",
-      "enabled": true,
-      "tier": "scoreboard",
-      "base_url_env": null,
-      "input_usd_per_million": 0.76,
-      "output_usd_per_million": 2.42,
-      "reasoning_effort": "none",
-      "min_output_tokens": 256,
-      "repetition_penalty": null
-    },
-    {
-      "id": "deepseek-v4-flash-0731",
-      "label": "DeepSeek V4-Flash-0731",
-      "provider": "openrouter",
-      "api_model": "deepseek/deepseek-v4-flash-0731",
-      "api_key_env": "OPENROUTER_API_KEY",
-      "base_url": "https://openrouter.ai/api/v1",
-      "enabled": true,
-      "tier": "scoreboard",
-      "base_url_env": null,
-      "input_usd_per_million": 0.09,
-      "output_usd_per_million": 0.18,
-      "reasoning_effort": "none",
-      "min_output_tokens": 256,
-      "repetition_penalty": null
-    },
-    {
-      "id": "caernarfon-3b",
-      "label": "Caernarfon 3B",
-      "provider": "openai_compatible",
-      "api_model": "britllm/britllm-3b-v0.1",
-      "api_key_env": "CAERNARFON_API_KEY",
-      "base_url": "http://127.0.0.1:8002/v1",
-      "enabled": false,
-      "tier": "scoreboard",
-      "base_url_env": "CAERNARFON_API_BASE",
-      "input_usd_per_million": null,
-      "output_usd_per_million": null,
-      "reasoning_effort": null,
-      "min_output_tokens": null,
-      "repetition_penalty": null
-    },
-    {
-      "id": "mwydryn",
-      "label": "Mwydryn",
-      "provider": "openai_compatible",
-      "api_model": "BangorAI/phi2-mwydryn-1",
-      "api_key_env": "MWYDRYN_API_KEY",
-      "base_url": "http://127.0.0.1:8003/v1",
-      "enabled": false,
-      "tier": "scoreboard",
-      "base_url_env": "MWYDRYN_API_BASE",
-      "input_usd_per_million": null,
-      "output_usd_per_million": null,
-      "reasoning_effort": null,
-      "min_output_tokens": 512,
-      "repetition_penalty": null
-    },
-    {
-      "id": "bangor-mistral-cymraeg-v2",
-      "label": "BangorAI Mistral-7B-Cymraeg-Welsh-v2",
-      "provider": "openai_compatible",
-      "api_model": "BangorAI/Mistral-7B-Cymraeg-Welsh-v2",
-      "api_key_env": "MISTRAL_CYMRAEG_API_KEY",
-      "base_url": "http://127.0.0.1:8005/v1",
-      "enabled": false,
-      "tier": "scoreboard",
-      "base_url_env": "MISTRAL_CYMRAEG_API_BASE",
-      "input_usd_per_million": null,
-      "output_usd_per_million": null,
-      "reasoning_effort": null,
-      "min_output_tokens": 512,
-      "repetition_penalty": null
-    },
-    {
-      "id": "mwydryn-7b-v2",
-      "label": "BangorAI Mwydryn 7B fersiwn 2",
-      "provider": "openai_compatible",
-      "api_model": "BangorAI/mwydryn-7b-fersiwn-2",
-      "api_key_env": "MWYDRYN_7B_API_KEY",
-      "base_url": "http://127.0.0.1:8006/v1",
-      "enabled": false,
-      "tier": "scoreboard",
-      "base_url_env": "MWYDRYN_7B_API_BASE",
-      "input_usd_per_million": null,
-      "output_usd_per_million": null,
-      "reasoning_effort": null,
-      "min_output_tokens": 512,
-      "repetition_penalty": null
-    },
-    {
-      "id": "techiaith-llama-3-2-1b-sft",
-      "label": "Techiaith Llama 3.2 1B Welsh SFT",
-      "provider": "openai_compatible",
-      "api_model": "techiaith/llama-3.2-1b-welsh-sft",
-      "api_key_env": "TECHIAITH_LLAMA_SFT_API_KEY",
-      "base_url": "http://127.0.0.1:8007/v1",
-      "enabled": false,
-      "tier": "scoreboard",
-      "base_url_env": "TECHIAITH_LLAMA_SFT_API_BASE",
-      "input_usd_per_million": null,
-      "output_usd_per_million": null,
-      "reasoning_effort": null,
-      "min_output_tokens": 512,
-      "repetition_penalty": 1.15
-    }
-  ],
   "models": [
     {
       "id": "gpt-5-6-sol",
@@ -210,8 +16,8 @@
       "enabled": true,
       "tier": "scoreboard",
       "base_url_env": null,
-      "input_usd_per_million": 5.0,
-      "output_usd_per_million": 30.0,
+      "input_usd_per_million": 5,
+      "output_usd_per_million": 30,
       "reasoning_effort": "none",
       "min_output_tokens": null,
       "repetition_penalty": null
@@ -226,8 +32,8 @@
       "enabled": true,
       "tier": "scoreboard",
       "base_url_env": null,
-      "input_usd_per_million": 5.0,
-      "output_usd_per_million": 25.0,
+      "input_usd_per_million": 5,
+      "output_usd_per_million": 25,
       "reasoning_effort": null,
       "min_output_tokens": 512,
       "repetition_penalty": null
@@ -242,8 +48,8 @@
       "enabled": true,
       "tier": "scoreboard",
       "base_url_env": null,
-      "input_usd_per_million": 10.0,
-      "output_usd_per_million": 50.0,
+      "input_usd_per_million": 10,
+      "output_usd_per_million": 50,
       "reasoning_effort": "low",
       "min_output_tokens": 512,
       "repetition_penalty": null
@@ -274,8 +80,8 @@
       "enabled": true,
       "tier": "scoreboard",
       "base_url_env": null,
-      "input_usd_per_million": 3.0,
-      "output_usd_per_million": 15.0,
+      "input_usd_per_million": 3,
+      "output_usd_per_million": 15,
       "reasoning_effort": "none",
       "min_output_tokens": 256,
       "repetition_penalty": null
@@ -310,22 +116,6 @@
       "output_usd_per_million": 0.18,
       "reasoning_effort": "none",
       "min_output_tokens": 256,
-      "repetition_penalty": null
-    },
-    {
-      "id": "caernarfon-3b",
-      "label": "Caernarfon 3B",
-      "provider": "openai_compatible",
-      "api_model": "britllm/britllm-3b-v0.1",
-      "api_key_env": "CAERNARFON_API_KEY",
-      "base_url": "http://127.0.0.1:8002/v1",
-      "enabled": false,
-      "tier": "scoreboard",
-      "base_url_env": "CAERNARFON_API_BASE",
-      "input_usd_per_million": null,
-      "output_usd_per_million": null,
-      "reasoning_effort": null,
-      "min_output_tokens": null,
       "repetition_penalty": null
     },
     {
@@ -391,6 +181,38 @@
       "reasoning_effort": null,
       "min_output_tokens": 512,
       "repetition_penalty": 1.15
+    },
+    {
+      "id": "jupiter-n-120b",
+      "label": "Jupiter-N-120B",
+      "provider": "openai_compatible",
+      "api_model": "Jupiter-N-120B-BF16",
+      "api_key_env": "JUPITER_API_KEY",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "enabled": false,
+      "tier": "scoreboard",
+      "base_url_env": "JUPITER_API_BASE",
+      "input_usd_per_million": null,
+      "output_usd_per_million": null,
+      "reasoning_effort": null,
+      "min_output_tokens": 512,
+      "repetition_penalty": null
+    },
+    {
+      "id": "caernarfon-3b-cymraeg-instruct-v0-1",
+      "label": "Caernarfon 3B Cymraeg Instruct v0.1",
+      "provider": "openai_compatible",
+      "api_model": "caernarfon-3b-cymraeg-instruct-v0.1",
+      "api_key_env": "CAERNARFON_API_KEY",
+      "base_url": "http://127.0.0.1:8002/v1",
+      "enabled": false,
+      "tier": "scoreboard",
+      "base_url_env": "CAERNARFON_API_BASE",
+      "input_usd_per_million": null,
+      "output_usd_per_million": null,
+      "reasoning_effort": null,
+      "min_output_tokens": 512,
+      "repetition_penalty": null
     }
   ],
   "suites": [
@@ -415,11 +237,11 @@
     "welsh-arc-easy-mini-cy"
   ],
   "status_counts": {
-    "completed": 20196,
-    "invalid": 2736,
+    "completed": 86092,
+    "invalid": 2101,
     "refusal": 80
   },
-  "retry_policy": "Rows with status=error were retried in place. Successful rows were not rerun; the final model configuration records the higher output ceilings used for retries. Persistent empty or length-limited model outputs are status=invalid and score zero; infrastructure errors still block publication.",
+  "retry_policy": "Ailbrofwyd rhesi status=error yn eu lle. Mae allbynnau gwag, allbynnau sy'n cyrraedd y terfyn tocynnau, a chyfyngiadau cyd-destun y model yn status=invalid ac yn sgorio sero. Mae gwallau seilwaith yn rhwystro cyhoeddi.",
   "formula": {
     "overall_score": "50% macro mean of 9 objective suites + 50% macro mean of 9 Techiaith suites",
     "translation": "Corpus BLEU, reported separately"
@@ -444,12 +266,6 @@
       "includes_ccc": true
     },
     {
-      "run_id": "cymraegbench-v0.1-lleol-caernarfon-3b",
-      "model_count": 1,
-      "cases_per_model": 2053,
-      "includes_ccc": true
-    },
-    {
       "run_id": "cymraegbench-v0.1-lleol-mwydryn-7b-v2",
       "model_count": 1,
       "cases_per_model": 2053,
@@ -460,12 +276,29 @@
       "model_count": 1,
       "cases_per_model": 2053,
       "includes_ccc": true
+    },
+    {
+      "run_id": "jupiter-spark-bf16-v0.1",
+      "model_count": 1,
+      "cases_per_model": 33657,
+      "includes_ccc": true,
+      "scope": "set lawn"
+    },
+    {
+      "run_id": "caernarfon-3b-cymraeg-instruct-v0.1",
+      "model_count": 1,
+      "cases_per_model": 33657,
+      "includes_ccc": true,
+      "scope": "set lawn"
     }
   ],
   "score_scope": {
     "core_suites": 19,
     "ccc_suites": 7,
     "overall_score_uses_ccc": false,
-    "total_responses": 23012
+    "total_responses": 88273,
+    "sampled_responses": 20959,
+    "full_set_responses": 67314,
+    "methodological_note": "Mae'r un fformiwla a'r un setiau'n cael eu defnyddio, ond mae'r 11 model blaenorol yn samplau hyd at 100 achos y set; mae Jupiter a Caernarfon Cymraeg Instruct yn rhediadau set lawn. Mae rhediad y model sylfaenol Caernarfon 3B wedi'i gadw yn yr archif ond wedi'i dynnu o'r prif sgorfwrdd gan fod y fersiwn instruct bellach ar gael."
   }
 }

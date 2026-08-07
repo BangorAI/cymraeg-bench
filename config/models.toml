@@ -106,6 +106,7 @@ base_url = "http://127.0.0.1:8001/v1"
 base_url_env = "JUPITER_API_BASE"
 enabled = false
 tier = "scoreboard"
+min_output_tokens = 512
 
 [[models]]
 id = "caernarfon-3b"
@@ -117,6 +118,18 @@ base_url = "http://127.0.0.1:8002/v1"
 base_url_env = "CAERNARFON_API_BASE"
 enabled = false
 tier = "scoreboard"
+
+[[models]]
+id = "caernarfon-3b-cymraeg-instruct-v0-1"
+label = "Caernarfon 3B Cymraeg Instruct v0.1"
+provider = "openai_compatible"
+api_model = "caernarfon-3b-cymraeg-instruct-v0.1"
+api_key_env = "CAERNARFON_API_KEY"
+base_url = "http://127.0.0.1:8002/v1"
+base_url_env = "CAERNARFON_API_BASE"
+enabled = false
+tier = "scoreboard"
+min_output_tokens = 512
 
 [[models]]
 id = "mwydryn"

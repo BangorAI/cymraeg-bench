@@ -45,7 +45,10 @@ def finalize_output_errors(database: Path) -> tuple[int, int]:
     converted = 0
     for row in rows:
         reason = row["error"] or ""
-        if not reason.startswith(OUTPUT_ERROR_PREFIXES):
+        if (
+            not reason.startswith(OUTPUT_ERROR_PREFIXES)
+            and "maximum context length" not in reason.lower()
+        ):
             continue
         connection.execute(
             """UPDATE results
