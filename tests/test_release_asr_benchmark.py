@@ -56,3 +56,16 @@ def test_release_model_list_adds_dewi_only_when_configured() -> None:
 
     assert model_ids[-1] == "dewibrynjones-kaldi-cy-2606"
     assert revisions[model_ids[-1]]
+
+
+def test_all_release_models_have_nonempty_revisions() -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(
+        benchmark_args(dewi_model_dir=ROOT / "models" / "dewi")
+    )
+
+    model_ids, revisions = benchmark.model_ids()
+    selected = {model_id: revisions[model_id] for model_id in model_ids}
+
+    assert len(selected) == 21
+    assert all(selected.values())

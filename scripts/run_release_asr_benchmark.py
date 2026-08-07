@@ -345,6 +345,10 @@ class ReleaseBenchmark:
             "strongest_techiaith_wer": strongest_wer,
             "margin": strongest_wer - bangor_wer,
             "techiaith_models": len(tech_rows),
+            "model_revisions": {
+                model_id: revisions[model_id]
+                for model_id in model_ids
+            },
         }
         self.write_status("complete" if passed else "gate_failed", gate=gate)
         print(json.dumps(gate, indent=2), flush=True)
