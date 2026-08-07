@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import json
+import math
 import os
 import re
 import shlex
@@ -466,6 +467,9 @@ class ReleaseBenchmark:
         left_context = int(selection["left_context"])
         method = str(selection["method"])
         beam = int(selection["beam"])
+        blank_penalty = float(selection.get("blank_penalty", 0))
+        if not math.isfinite(blank_penalty) or blank_penalty < 0:
+            raise RuntimeError(f"Blank penalty annilys: {blank_penalty}")
         name = f"epoch-{epoch}-avg-{avg}-chunk-{chunk}-left-{left_context}"
         exp = self.args.zipformer_root / "exp" / self.args.experiment
         sources = {
@@ -490,6 +494,7 @@ class ReleaseBenchmark:
             "CYMRAEG_ZIPFORMER_DIR": str(destination),
             "CYMRAEG_ZIPFORMER_DECODING_METHOD": method,
             "CYMRAEG_ZIPFORMER_MAX_ACTIVE_PATHS": str(beam if method == "modified_beam_search" else 4),
+            "CYMRAEG_ZIPFORMER_BLANK_PENALTY": f"{blank_penalty:g}",
             "CYMRAEG_ZIPFORMER_REVISION": release_revision,
         })
         return env

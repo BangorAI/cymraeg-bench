@@ -23,6 +23,11 @@ def main() -> None:
         type=int,
         default=int(os.getenv("CYMRAEG_ZIPFORMER_MAX_ACTIVE_PATHS", "4")),
     )
+    parser.add_argument(
+        "--blank-penalty",
+        type=float,
+        default=float(os.getenv("CYMRAEG_ZIPFORMER_BLANK_PENALTY", "0")),
+    )
     parser.add_argument("--num-threads", type=int, default=2)
     parser.add_argument("--serve-jsonl", action="store_true")
     args = parser.parse_args()
@@ -39,6 +44,7 @@ def main() -> None:
         feature_dim=80,
         decoding_method=args.decoding_method,
         max_active_paths=args.max_active_paths,
+        blank_penalty=args.blank_penalty,
         enable_endpoint_detection=False,
     )
     def transcribe(audio: Path) -> str:

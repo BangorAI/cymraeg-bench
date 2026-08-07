@@ -102,6 +102,47 @@ def test_prepare_zipformer_rejects_release_without_fingerprint() -> None:
         benchmark.prepare_zipformer({"selection": {}}, {})
 
 
+def test_prepare_zipformer_propagates_dev_selected_blank_penalty(tmp_path: Path) -> None:
+    module = load_release_module()
+    zipformer = tmp_path / "zipformer"
+    experiment = "run"
+    exp = zipformer / "exp" / experiment
+    lang = zipformer / "data" / "cy-best-all" / "lang_bpe_500"
+    exp.mkdir(parents=True)
+    lang.mkdir(parents=True)
+    name = "epoch-90-avg-10-chunk-32-left-128"
+    for filename in (
+        f"encoder-{name}.int8.onnx",
+        f"decoder-{name}.onnx",
+        f"joiner-{name}.int8.onnx",
+    ):
+        (exp / filename).write_bytes(b"model")
+    (lang / "tokens.txt").write_text("<blk> 0\n", encoding="utf-8")
+    benchmark = module.ReleaseBenchmark(benchmark_args(
+        zipformer_root=zipformer,
+        experiment=experiment,
+    ))
+    benchmark.root = tmp_path / "bench"
+    fingerprint = "sha256:" + "a" * 64
+
+    env = benchmark.prepare_zipformer({
+        "release_revision": fingerprint,
+        "selection": {
+            "epoch": 90,
+            "avg": 10,
+            "chunk": 32,
+            "left_context": 128,
+            "method": "modified_beam_search",
+            "beam": 16,
+            "blank_penalty": 0.75,
+        },
+    }, {})
+
+    assert env["CYMRAEG_ZIPFORMER_DECODING_METHOD"] == "modified_beam_search"
+    assert env["CYMRAEG_ZIPFORMER_MAX_ACTIVE_PATHS"] == "16"
+    assert env["CYMRAEG_ZIPFORMER_BLANK_PENALTY"] == "0.75"
+
+
 def test_wait_for_release_rejects_unknown_status_schema(tmp_path: Path) -> None:
     module = load_release_module()
     release = tmp_path / "release.json"
