@@ -8,6 +8,7 @@ import tomllib
 import unittest
 import wave
 from pathlib import Path
+from unittest import mock
 
 from aisteddfod_benchmarks.voice import (
     VoiceModel,
@@ -17,6 +18,7 @@ from aisteddfod_benchmarks.voice import (
     build_voice_report,
     edit_counts,
     normalize_transcript,
+    load_voice_models,
     run_voice_benchmark,
     transcript_metrics,
     wav_metrics,
@@ -32,6 +34,25 @@ def write_wav(path: Path, samples: list[int], sample_rate: int = 16000) -> None:
 
 
 class VoiceMetricsTests(unittest.TestCase):
+    def test_model_revision_expands_environment_variable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "models.toml"
+            path.write_text(
+                "\n".join([
+                    "[[models]]",
+                    'id = "model"',
+                    'label = "Model"',
+                    'task = "asr"',
+                    'command = ["true"]',
+                    'revision = "${CYMRAEG_TEST_MODEL_REVISION}"',
+                ]) + "\n",
+                encoding="utf-8",
+            )
+            with mock.patch.dict(
+                "os.environ", {"CYMRAEG_TEST_MODEL_REVISION": "sha256:abc"}
+            ):
+                self.assertEqual(load_voice_models(path)[0].revision, "sha256:abc")
+
     def test_python_adapter_uses_the_benchmark_interpreter(self) -> None:
         model = VoiceModel(
             id="adapter",

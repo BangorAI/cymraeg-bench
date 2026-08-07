@@ -8,6 +8,7 @@ import csv
 import hashlib
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -44,6 +45,7 @@ class ReleaseBenchmark:
         self.target = self.root / ".voice-packages-release"
         self.release_status = args.release_status.resolve()
         self.completed_models: list[str] = []
+        self.release_revision: str | None = None
 
     def write_status(self, stage: str, **extra: object) -> None:
         payload = {
@@ -175,6 +177,10 @@ class ReleaseBenchmark:
         selection = release.get("selection")
         if not isinstance(selection, dict):
             raise RuntimeError("Selection ar goll o release-finalization-status.json")
+        release_revision = str(release.get("release_revision", ""))
+        if not re.fullmatch(r"sha256:[0-9a-f]{64}", release_revision):
+            raise RuntimeError(f"release_revision annilys: {release_revision!r}")
+        self.release_revision = release_revision
         epoch = int(selection["epoch"])
         avg = int(selection["avg"])
         chunk = int(selection["chunk"])
@@ -205,13 +211,19 @@ class ReleaseBenchmark:
             "CYMRAEG_ZIPFORMER_DIR": str(destination),
             "CYMRAEG_ZIPFORMER_DECODING_METHOD": method,
             "CYMRAEG_ZIPFORMER_MAX_ACTIVE_PATHS": str(beam if method == "modified_beam_search" else 4),
+            "CYMRAEG_ZIPFORMER_REVISION": release_revision,
         })
         return env
 
     def model_ids(self) -> tuple[list[str], dict[str, str]]:
         with (self.root / "config" / "voice-models.toml").open("rb") as source:
             models = tomllib.load(source)["models"]
-        revisions = {str(item["id"]): str(item.get("revision", "")) for item in models}
+        revisions = {
+            str(item["id"]): os.path.expandvars(str(item.get("revision", "")))
+            for item in models
+        }
+        if self.release_revision is not None:
+            revisions["bangorai-zipformer-cy"] = self.release_revision
         techiaith = [
             str(item["id"])
             for item in models

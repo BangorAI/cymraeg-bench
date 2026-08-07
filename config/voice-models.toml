@@ -10,7 +10,7 @@ enabled = false
 protocol = "jsonl"
 command = ["python", "{root}/adapters/sherpa_onnx_asr.py", "--model-dir", "{model_dir}", "--serve-jsonl"]
 source = "BangorAI/zipformer-cymraeg"
-revision = "voice-v0.1"
+revision = "${CYMRAEG_ZIPFORMER_REVISION}"
 license = "Apache-2.0; pwysau wedi'u hyfforddi ar ddata CC0"
 [models.variables]
 model_dir = "${CYMRAEG_ZIPFORMER_DIR}"

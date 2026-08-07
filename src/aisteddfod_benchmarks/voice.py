@@ -62,7 +62,7 @@ def load_voice_models(path: Path) -> list[VoiceModel]:
             enabled=bool(item.get("enabled", False)),
             variables={str(k): os.path.expandvars(str(v)) for k, v in item.get("variables", {}).items()},
             source=str(item.get("source", "")),
-            revision=str(item.get("revision", "")),
+            revision=os.path.expandvars(str(item.get("revision", ""))),
             license=str(item.get("license", "")),
         )
         for item in _table_items(path, "models")

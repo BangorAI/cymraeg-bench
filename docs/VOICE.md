@@ -148,4 +148,6 @@ python scripts/run_release_asr_benchmark.py \
 Ni fydd y gate yn pasio oni bai bod BangorAI wedi cwblhau 3,445/3,445 ac â WER
 is na'r gorau o bob un o'r 19 model Techiaith ar yr un manifest. Cedwir statws
 peiriant-ddarllenadwy yn `runs/voice-v0.1-status.json` a'r leaderboard o dan
-`results/voice-v0.1/`.
+`results/voice-v0.1/`. Mae revision rhes BangorAI yn fingerprint SHA-256 o'r
+union bundle WASM terfynol, felly ni all canlyniad hen checkpoint basio gate
+release newydd.

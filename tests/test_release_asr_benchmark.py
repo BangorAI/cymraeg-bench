@@ -4,6 +4,8 @@ import importlib.util
 from argparse import Namespace
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -69,3 +71,22 @@ def test_all_release_models_have_nonempty_revisions() -> None:
 
     assert len(selected) == 21
     assert all(selected.values())
+
+
+def test_bangorai_revision_is_the_exact_release_fingerprint() -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args())
+    fingerprint = "sha256:" + "a" * 64
+    benchmark.release_revision = fingerprint
+
+    _, revisions = benchmark.model_ids()
+
+    assert revisions["bangorai-zipformer-cy"] == fingerprint
+
+
+def test_prepare_zipformer_rejects_release_without_fingerprint() -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args())
+
+    with pytest.raises(RuntimeError, match="release_revision"):
+        benchmark.prepare_zipformer({"selection": {}}, {})
