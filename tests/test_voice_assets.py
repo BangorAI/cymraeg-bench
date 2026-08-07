@@ -80,6 +80,12 @@ class VoiceAssetTests(unittest.TestCase):
             "https://github.com/ggml-org/whisper.cpp.git",
         )
 
+    def test_whisper_cpp_bootstrap_finds_nvcc_outside_path(self) -> None:
+        script = (ROOT / "scripts" / "bootstrap_whisper_cpp.sh").read_text()
+        self.assertIn("/usr/local/cuda/bin/nvcc", script)
+        self.assertIn('-DCMAKE_CUDA_COMPILER="$CUDACXX"', script)
+        self.assertIn("Methu canfod nvcc", script)
+
 
 if __name__ == "__main__":
     unittest.main()
