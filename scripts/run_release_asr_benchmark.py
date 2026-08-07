@@ -23,6 +23,26 @@ SUITE_ID = "arfor-test-clean-v0.1"
 EXPECTED_CASES = 3445
 
 
+def probe_filename(siblings: list[object]) -> str:
+    """Choose a real large artifact so gated metadata alone cannot pass."""
+    candidates = [
+        sibling
+        for sibling in siblings
+        if int(getattr(sibling, "size", 0) or 0) > 0
+        and str(getattr(sibling, "rfilename", ""))
+    ]
+    if not candidates:
+        raise ValueError("Nid oes artifact model â maint hysbys")
+    selected = max(
+        candidates,
+        key=lambda sibling: (
+            int(getattr(sibling, "size", 0) or 0),
+            str(getattr(sibling, "rfilename", "")),
+        ),
+    )
+    return str(getattr(selected, "rfilename"))
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -91,6 +111,61 @@ class ReleaseBenchmark:
                 print(f"[{utc_now()}] Yn dal i aros am y release bundle", flush=True)
                 last_report = now
             time.sleep(self.args.poll_interval)
+
+    def check_model_access(self) -> list[dict[str, str]]:
+        """HEAD the largest pinned artifact in every Techiaith ASR repo."""
+        from huggingface_hub import HfApi, hf_hub_download
+
+        catalog = json.loads(
+            (self.root / "config" / "techiaith-asr-catalog.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        failures: list[dict[str, str]] = []
+        api = HfApi()
+        for item in catalog["models"]:
+            repo_id = str(item["id"])
+            revision = str(item["revision"])
+            try:
+                info = api.model_info(
+                    repo_id,
+                    revision=revision,
+                    files_metadata=True,
+                )
+                filename = probe_filename(list(info.siblings))
+                hf_hub_download(
+                    repo_id=repo_id,
+                    filename=filename,
+                    revision=revision,
+                    dry_run=True,
+                )
+            except Exception as error:
+                failures.append({
+                    "model": repo_id,
+                    "revision": revision,
+                    "error": f"{type(error).__name__}: {str(error).splitlines()[0]}",
+                })
+        return failures
+
+    def wait_for_model_access(self) -> None:
+        """Wait without touching the test manifest until every weight is readable."""
+        while True:
+            self.write_status("checking_model_access")
+            failures = self.check_model_access()
+            if not failures:
+                self.write_status("model_access_verified", techiaith_models=19)
+                print(f"[{utc_now()}] Mynediad i bob un o'r 19 model wedi'i wirio", flush=True)
+                return
+            self.write_status(
+                "waiting_for_model_access",
+                inaccessible_models=failures,
+            )
+            names = ", ".join(item["model"] for item in failures)
+            print(
+                f"[{utc_now()}] Yn aros am fynediad Hugging Face: {names}",
+                flush=True,
+            )
+            time.sleep(self.args.access_poll_interval)
 
     def install_runtime(self) -> dict[str, str]:
         lock_hash = sha256_file(self.root / "uv.lock")
@@ -287,6 +362,7 @@ class ReleaseBenchmark:
             return list(csv.DictReader(source))
 
     def execute(self) -> None:
+        self.wait_for_model_access()
         release = self.wait_for_release()
         env = self.install_runtime()
         env = self.prepare_assets(env)
@@ -379,6 +455,7 @@ def main() -> None:
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--timeout", type=float, default=600.0)
     parser.add_argument("--poll-interval", type=int, default=60)
+    parser.add_argument("--access-poll-interval", type=int, default=600)
     args = parser.parse_args()
     benchmark = ReleaseBenchmark(args)
     try:

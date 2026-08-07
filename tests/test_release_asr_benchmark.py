@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 from argparse import Namespace
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -30,6 +31,7 @@ def benchmark_args(**updates: object) -> Namespace:
         "device": "cuda:0",
         "timeout": 600.0,
         "poll_interval": 60,
+        "access_poll_interval": 600,
     }
     values.update(updates)
     return Namespace(**values)
@@ -90,3 +92,21 @@ def test_prepare_zipformer_rejects_release_without_fingerprint() -> None:
 
     with pytest.raises(RuntimeError, match="release_revision"):
         benchmark.prepare_zipformer({"selection": {}}, {})
+
+
+def test_access_probe_selects_the_largest_real_artifact() -> None:
+    module = load_release_module()
+    siblings = [
+        SimpleNamespace(rfilename="README.md", size=100),
+        SimpleNamespace(rfilename="model.bin", size=20_000),
+        SimpleNamespace(rfilename="config.json", size=500),
+    ]
+
+    assert module.probe_filename(siblings) == "model.bin"
+
+
+def test_access_probe_rejects_metadata_without_sized_artifacts() -> None:
+    module = load_release_module()
+
+    with pytest.raises(ValueError, match="artifact model"):
+        module.probe_filename([SimpleNamespace(rfilename="README.md", size=None)])
