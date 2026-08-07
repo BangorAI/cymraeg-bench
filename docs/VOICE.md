@@ -42,6 +42,9 @@ Ni ddylid cyfuno'r sgoriau dynol â WER mewn un rhif cyffredinol.
 ## Rhedeg
 
 ```bash
+# Gosodwch build PyTorch CPU/CUDA sy'n addas i'r peiriant yn gyntaf. Yna:
+python -m pip install -e '.[voice-asr,voice-tts]'
+
 # Nid yw'r sain prawf yn Git. Lawrlwythwch parquet ARFOR pinned:
 mkdir -p downloads/arfor
 curl --fail --location --continue-at - \
@@ -75,4 +78,6 @@ uv run --locked cymraeg-bench voice listening-report \
 Mae `voice run` yn checkpointio pob achos i JSONL ac yn hepgor rhesi
 llwyddiannus wrth ailddechrau. Nid yw modelau mawr wedi'u galluogi'n ddiofyn;
 dewiswch IDs yn benodol ar ôl paratoi eu hamgylcheddau a'r newidynnau llwybr
-yn `config/voice-models.toml`.
+yn `config/voice-models.toml`. Mae extras `voice-asr` a `voice-tts` wedi'u
+pinio; cedwir PyTorch y tu allan i'r extras oherwydd bod ei build CUDA/CPU yn
+dibynnu ar y peiriant.
