@@ -36,6 +36,10 @@ os yw ID rhesymegol yn aros yr un fath ond bod y SHA yn newid, caiff pob achos
 ei ail-redeg ac mae'r adroddiad yn cadw'r ddau revision ar wahân. Wrth ail-redeg
 achos a fethodd, dim ond y cofnod diweddaraf ar gyfer yr un
 model/revision/set/achos sy'n cyfrannu at y leaderboard.
+Mae'r addasydd Transformers yn datrys y snapshot SHA cyfan i lwybr lleol cyn
+creu'r pipeline. Mae hyn yn pinio tokenizer a KenLM hefyd; nid yw'n dibynnu ar
+ymddygiad `pyctcdecode` sy'n gallu lawrlwytho'r language model o `main` hyd yn
+oed pan fo `revision` y model acwstig wedi'i osod.
 
 ## Protocol TTS
 

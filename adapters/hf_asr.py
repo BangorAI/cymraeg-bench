@@ -15,13 +15,17 @@ def main() -> None:
     parser.add_argument("--language")
     parser.add_argument("--serve-jsonl", action="store_true")
     args = parser.parse_args()
+    from huggingface_hub import snapshot_download
     from transformers import pipeline
 
     device = os.getenv("VOICE_BENCH_DEVICE", "cuda:0")
+    # Passing revision= to transformers pins the acoustic model, but its
+    # pyctcdecode integration historically fetched KenLM files from main.
+    # Resolve the complete snapshot first so every component uses one SHA.
+    model_path = snapshot_download(repo_id=args.model, revision=args.revision)
     recognizer = pipeline(
         "automatic-speech-recognition",
-        model=args.model,
-        revision=args.revision,
+        model=model_path,
         device=device,
     )
     def transcribe(audio: str) -> str:
