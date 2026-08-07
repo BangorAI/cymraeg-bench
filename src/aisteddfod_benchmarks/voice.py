@@ -337,7 +337,12 @@ def run_voice_benchmark(
     completed_keys = set()
     if output.is_file():
         completed_keys = {
-            (row["model_id"], row["suite_id"], row["case_id"])
+            (
+                row["model_id"],
+                row.get("model_revision", ""),
+                row["suite_id"],
+                row["case_id"],
+            )
             for row in _read_jsonl(output, require_id=False)
             if row.get("status") == "ok"
         }
@@ -352,7 +357,7 @@ def run_voice_benchmark(
                 if max_cases is not None:
                     cases = cases[:max_cases]
                 for case in cases:
-                    key = (model.id, suite.id, str(case["id"]))
+                    key = (model.id, model.revision, suite.id, str(case["id"]))
                     if key in completed_keys:
                         continue
                     row: dict[str, Any] = {
@@ -456,14 +461,33 @@ def _ratio(counts: dict[str, int]) -> float | None:
 
 def build_voice_report(results: Path, markdown: Path, csv_path: Path) -> list[dict[str, Any]]:
     rows = _read_jsonl(results, require_id=False)
-    groups: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
-    for row in rows:
-        groups.setdefault((row["model_id"], row["suite_id"], row["task"]), []).append(row)
+    latest_rows = {
+        (
+            row["model_id"],
+            row.get("model_revision", ""),
+            row["suite_id"],
+            row["task"],
+            row["case_id"],
+        ): row
+        for row in rows
+    }
+    groups: dict[tuple[str, str, str, str], list[dict[str, Any]]] = {}
+    for row in latest_rows.values():
+        groups.setdefault(
+            (
+                row["model_id"],
+                row.get("model_revision", ""),
+                row["suite_id"],
+                row["task"],
+            ),
+            [],
+        ).append(row)
     summary = []
-    for (model_id, suite_id, task), items in sorted(groups.items()):
+    for (model_id, model_revision, suite_id, task), items in sorted(groups.items()):
         successful = [item for item in items if item.get("status") == "ok"]
         result: dict[str, Any] = {
             "model_id": model_id,
+            "model_revision": model_revision,
             "suite_id": suite_id,
             "task": task,
             "cases": len(items),
@@ -491,14 +515,15 @@ def build_voice_report(results: Path, markdown: Path, csv_path: Path) -> list[di
     lines = [
         "# CymraegBench Voice v0.1",
         "",
-        "| Model | Set | Tasg | Achosion | WER | CER | RTF | Methiannau |",
-        "|---|---|---:|---:|---:|---:|---:|---:|",
+        "| Model | Revision | Set | Tasg | Achosion | WER | CER | RTF | Methiannau |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|",
     ]
     for item in summary:
         percentage = lambda value: "—" if value is None else f"{100 * value:.2f}%"
         number = lambda value: "—" if value is None else f"{value:.3f}"
         lines.append(
-            f"| {item['model_id']} | {item['suite_id']} | {item['task']} | {item['successful']}/{item['cases']} "
+            f"| {item['model_id']} | {item['model_revision'][:12] or '—'} | "
+            f"{item['suite_id']} | {item['task']} | {item['successful']}/{item['cases']} "
             f"| {percentage(item['wer'])} | {percentage(item['cer'])} | {number(item['rtf_mean'])} "
             f"| {percentage(item['failure_rate'])} |"
         )

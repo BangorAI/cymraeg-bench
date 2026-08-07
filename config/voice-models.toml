@@ -16,6 +16,41 @@ license = "Apache-2.0; pwysau wedi'u hyfforddi ar ddata CC0"
 model_dir = "${CYMRAEG_ZIPFORMER_DIR}"
 
 [[models]]
+id = "techiaith-whisper-large-cy-en-2607"
+label = "Techiaith Whisper Large CY/EN (26.07)"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/whisper-large-ft-cy-en", "--revision", "014eacd47a907794bf093d033488c5edff9cdf58", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-large-ft-cy-en"
+revision = "014eacd47a907794bf093d033488c5edff9cdf58"
+license = "Apache-2.0"
+
+[[models]]
+id = "techiaith-whisper-large-cy-en-2607-ct2"
+label = "Techiaith Whisper Large CY/EN (26.07, CTranslate2 INT8)"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/faster_whisper_asr.py", "--model", "techiaith/whisper-large-ft-cy-en-ct2", "--revision", "8a910570a30fcb28ceda030bb127b7486a811158", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-large-ft-cy-en-ct2"
+revision = "8a910570a30fcb28ceda030bb127b7486a811158"
+license = "Apache-2.0"
+
+[[models]]
+id = "techiaith-kaldi-cy-2601"
+label = "Techiaith Kaldi/Vosk Cymraeg 26.01"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/vosk_asr.py", "--model-dir", "{model_dir}", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/kaldi-cy-2601"
+revision = "4f0159b4349c5fa943b9bd64ce210cdc583848c5"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+[models.variables]
+model_dir = "${TECHIAITH_KALDI_2601_DIR}"
+
+[[models]]
 id = "techiaith-whisper-large-v3-verbatim"
 label = "Techiaith Whisper Large v3 Verbatim CY/EN"
 task = "asr"
@@ -27,6 +62,61 @@ revision = "357e1784586765174eeb86731faaadf95c730b32"
 license = "Apache-2.0"
 
 [[models]]
+id = "techiaith-whisper-large-v3-verbatim-ct2"
+label = "Techiaith Whisper Large v3 Verbatim CY/EN (CTranslate2)"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/faster_whisper_asr.py", "--model", "techiaith/whisper-large-v3-ft-verbatim-cy-en-ct2", "--revision", "7a194a7ecd1e1a7c5e0f2ab572b395dfd596bd57", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-large-v3-ft-verbatim-cy-en-ct2"
+revision = "7a194a7ecd1e1a7c5e0f2ab572b395dfd596bd57"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-whisper-large-v3-commonvoice-cy"
+label = "Techiaith Whisper Large v3 Common Voice CY"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/whisper-large-v3-ft-commonvoice-cy", "--revision", "2a5e258b45bc9c1f0fe69cae9c6ed70fc72119e9", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-large-v3-ft-commonvoice-cy"
+revision = "2a5e258b45bc9c1f0fe69cae9c6ed70fc72119e9"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-whisper-large-v3-commonvoice-cy-en"
+label = "Techiaith Whisper Large v3 Common Voice CY/EN"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/whisper-large-v3-ft-commonvoice-cy-en", "--revision", "6628ef6a5b38282b9924014b1fac5667b33f844d", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-large-v3-ft-commonvoice-cy-en"
+revision = "6628ef6a5b38282b9924014b1fac5667b33f844d"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-whisper-large-v3-turbo-verbatim"
+label = "Techiaith Whisper Large v3 Turbo Verbatim CY/EN"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/whisper-large-v3-turbo-ft-verbatim-cy-en", "--revision", "7f1f77871f203bd4dc45b81db5a59f153b91f17b", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-large-v3-turbo-ft-verbatim-cy-en"
+revision = "7f1f77871f203bd4dc45b81db5a59f153b91f17b"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-whisper-tiny-cy-en"
+label = "Techiaith Whisper Tiny CY/EN"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/whisper-tiny-ft-cy-en", "--revision", "5dfd7cdbce53378770f510a5ac9b1525cf563caf", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-tiny-ft-cy-en"
+revision = "5dfd7cdbce53378770f510a5ac9b1525cf563caf"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
 id = "techiaith-wav2vec2-btb-cv"
 label = "Techiaith Wav2Vec2 BTB/CV"
 task = "asr"
@@ -36,6 +126,103 @@ command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/wav2vec2
 source = "https://huggingface.co/techiaith/wav2vec2-btb-cv-ft-cv-cy"
 revision = "78e4da6e30fa3bd6e3db8cde07f28df950d8c2e3"
 license = "Apache-2.0"
+
+[[models]]
+id = "techiaith-wav2vec2-base-cy"
+label = "Techiaith Wav2Vec2 Base CY"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/wav2vec2-base-cy", "--revision", "6b5b0a175bb837cfb1951253646e5e22f52fb8b1", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/wav2vec2-base-cy"
+revision = "6b5b0a175bb837cfb1951253646e5e22f52fb8b1"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-wav2vec2-xlsr-cy-en"
+label = "Techiaith Wav2Vec2 XLSR-53 CY/EN"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/wav2vec2-xlsr-53-ft-cy-en", "--revision", "ff549fc26cdecd51e09b413fbb7bdb8521e6fc92", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/wav2vec2-xlsr-53-ft-cy-en"
+revision = "ff549fc26cdecd51e09b413fbb7bdb8521e6fc92"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-wav2vec-xlsr-cy-verbatim"
+label = "Techiaith Wav2Vec XLSR CY Verbatim"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/wav2vec-xlsr-ft-cy-verbatim", "--revision", "9a6c5f5b185107e4c00531dba21137eaa6353d06", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/wav2vec-xlsr-ft-cy-verbatim"
+revision = "9a6c5f5b185107e4c00531dba21137eaa6353d06"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-wav2vec2-xlsr-cy-en-withlm"
+label = "Techiaith Wav2Vec2 XLSR-53 CY/EN + KenLM"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/wav2vec2-xlsr-53-ft-cy-en-withlm", "--revision", "3d462e5b85490b9e16438ed524bc3c0deed2485f", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/wav2vec2-xlsr-53-ft-cy-en-withlm"
+revision = "3d462e5b85490b9e16438ed524bc3c0deed2485f"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-wav2vec2-xlsr-btb-cv"
+label = "Techiaith Wav2Vec2 XLSR-53 BTB/CV"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/hf_asr.py", "--model", "techiaith/wav2vec2-xlsr-53-ft-btb-cv-cy", "--revision", "b594d329547458c0d838f3683337025639e91e10", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/wav2vec2-xlsr-53-ft-btb-cv-cy"
+revision = "b594d329547458c0d838f3683337025639e91e10"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+
+[[models]]
+id = "techiaith-whisper-base-commonvoice-cy-en-cpp"
+label = "Techiaith Whisper Base Common Voice CY/EN (whisper.cpp)"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/whisper_cpp_asr.py", "--binary", "{binary}", "--model", "{model}", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-base-ft-commonvoice-cy-en-cpp"
+revision = "71380ca0fb3661d15b6ffd12ab967a5e00a2dbd7"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+[models.variables]
+binary = "${WHISPER_CPP_CLI}"
+model = "${TECHIAITH_WHISPER_BASE_CV_CY_EN_CPP_MODEL}"
+
+[[models]]
+id = "techiaith-whisper-base-verbatim-cy-en-cpp"
+label = "Techiaith Whisper Base Verbatim CY/EN (whisper.cpp)"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/whisper_cpp_asr.py", "--binary", "{binary}", "--model", "{model}", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-base-ft-verbatim-cy-en-cpp"
+revision = "6820fe305b84e14a159b92dffb29e0aafe54d7fa"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+[models.variables]
+binary = "${WHISPER_CPP_CLI}"
+model = "${TECHIAITH_WHISPER_BASE_VERBATIM_CY_EN_CPP_MODEL}"
+
+[[models]]
+id = "techiaith-whisper-base-commonvoice-cy-cpp"
+label = "Techiaith Whisper Base Common Voice CY (whisper.cpp)"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/whisper_cpp_asr.py", "--binary", "{binary}", "--model", "{model}", "--language", "cy", "--serve-jsonl"]
+source = "https://huggingface.co/techiaith/whisper-base-ft-commonvoice-cy-cpp"
+revision = "e07c902809855a0044f5bf620ac0f4cd7863fa93"
+license = "Gweler model card Techiaith; meincnodi yn unig"
+[models.variables]
+binary = "${WHISPER_CPP_CLI}"
+model = "${TECHIAITH_WHISPER_BASE_CV_CY_CPP_MODEL}"
 
 [[models]]
 id = "techiaith-kaldi-cy"

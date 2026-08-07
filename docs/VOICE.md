@@ -15,18 +15,27 @@ Transformers a Piper ddefnyddio amgylcheddau annibynnol.
   revision, trwydded a metadata megis acen.
 - Peidio â hyfforddi ar unrhyw achos yn y set prawf.
 
-Mae catalog v0.1 yn cynnwys addaswyr ar gyfer BangorAI Zipformer,
-`techiaith/whisper-large-v3-ft-verbatim-cy-en`, Wav2Vec2 Techiaith a
-Kaldi/Vosk Techiaith. Mae hefyd yn cynnwys `DewiBrynJones/kaldi-cy-2606` fel
-comparator ymchwil ar wahân; nid yw'r repo hwnnw'n datgan trwydded, felly ni
-ddylid ailddosbarthu na defnyddio'r pwysau mewn cynnyrch heb eglurhad. Mae SHA
-Hugging Face wedi'i binio ar gyfer pob model.
+Mae catalog v0.1 yn cynnwys BangorAI Zipformer a phob un o'r 19 repo a
+ddychwelwyd gan API Hugging Face ar gyfer
+`author=techiaith&filter=automatic-speech-recognition` ar 7 Awst 2026. Mae'r
+snapshot cyflawn yn `config/techiaith-asr-catalog.json`; mae prawf awtomatig yn
+methu os nad oes cofnod benchmark â'r un SHA ar gyfer pob repo. Mae'r runtime
+priodol wedi'i nodi ar gyfer Transformers, CTranslate2, whisper.cpp a
+Vosk/Kaldi. Mae hefyd yn cynnwys `DewiBrynJones/kaldi-cy-2606` fel comparator
+ymchwil ar wahân; nid yw'r repo hwnnw'n datgan trwydded, felly ni ddylid
+ailddosbarthu na defnyddio'r pwysau mewn cynnyrch heb eglurhad.
 Mae'r addaswyr ASR swyddogol yn defnyddio protocol JSONL hirhoedlog: caiff y
 model ei lwytho unwaith, yna mesurir pob clip heb gynnwys cost cychwyn y model
 yn y latency na'r RTF.
 Mae addasydd sherpa-onnx hefyd yn derbyn `--decoding-method` a
 `--max-active-paths`, fel bod greedy a modified beam search yn gallu cael eu
 cymharu heb newid y pwysau.
+
+Mae resumability yn cynnwys revision y model yn yr allwedd checkpoint. Felly,
+os yw ID rhesymegol yn aros yr un fath ond bod y SHA yn newid, caiff pob achos
+ei ail-redeg ac mae'r adroddiad yn cadw'r ddau revision ar wahân. Wrth ail-redeg
+achos a fethodd, dim ond y cofnod diweddaraf ar gyfer yr un
+model/revision/set/achos sy'n cyfrannu at y leaderboard.
 
 ## Protocol TTS
 
@@ -61,7 +70,7 @@ uv run --locked python scripts/prepare_voice_arfor.py \
 uv run --locked cymraeg-bench voice validate
 
 uv run --locked cymraeg-bench voice run \
-  --model-ids bangorai-zipformer-cy,techiaith-whisper-large-v3-verbatim \
+  --model-ids bangorai-zipformer-cy,techiaith-whisper-large-cy-en-2607 \
   --suite-ids arfor-test-clean-v0.1 \
   --output runs/voice-v0.1.jsonl
 
@@ -86,3 +95,11 @@ dewiswch IDs yn benodol ar ôl paratoi eu hamgylcheddau a'r newidynnau llwybr
 yn `config/voice-models.toml`. Mae extras `voice-asr` a `voice-tts` wedi'u
 pinio; cedwir PyTorch y tu allan i'r extras oherwydd bod ei build CUDA/CPU yn
 dibynnu ar y peiriant.
+
+Mae'r modelau CTranslate2 yn lawrlwytho snapshot wedi'i binio drwy
+`huggingface_hub` ac yn defnyddio `faster-whisper`. Ar gyfer y tri artifact
+whisper.cpp, gosodwch `WHISPER_CPP_CLI` i'r executable `whisper-cli` a'r tri
+newidyn `TECHIAITH_WHISPER_BASE_*_MODEL` i'w ffeiliau `ggml-model.bin`. Ar gyfer
+Kaldi, gosodwch `TECHIAITH_KALDI_DIR` a `TECHIAITH_KALDI_2601_DIR` i'r
+cyfeiriaduron model sydd wedi'u dadbacio. Nid oes angen y newidynnau hyn oni bai
+bod yr IDs perthnasol wedi'u dewis.

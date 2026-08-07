@@ -1,0 +1,26 @@
+{
+  "source": "https://huggingface.co/api/models?author=techiaith&filter=automatic-speech-recognition&limit=100&full=true",
+  "captured_at": "2026-08-07T16:55:00Z",
+  "count": 19,
+  "models": [
+    {"id": "techiaith/wav2vec2-base-cy", "revision": "6b5b0a175bb837cfb1951253646e5e22f52fb8b1", "runtime": "transformers"},
+    {"id": "techiaith/wav2vec2-xlsr-53-ft-cy-en", "revision": "ff549fc26cdecd51e09b413fbb7bdb8521e6fc92", "runtime": "transformers"},
+    {"id": "techiaith/wav2vec-xlsr-ft-cy-verbatim", "revision": "9a6c5f5b185107e4c00531dba21137eaa6353d06", "runtime": "transformers"},
+    {"id": "techiaith/whisper-tiny-ft-cy-en", "revision": "5dfd7cdbce53378770f510a5ac9b1525cf563caf", "runtime": "transformers"},
+    {"id": "techiaith/wav2vec2-xlsr-53-ft-cy-en-withlm", "revision": "3d462e5b85490b9e16438ed524bc3c0deed2485f", "runtime": "transformers-ctc-lm"},
+    {"id": "techiaith/whisper-large-v3-ft-commonvoice-cy", "revision": "2a5e258b45bc9c1f0fe69cae9c6ed70fc72119e9", "runtime": "transformers"},
+    {"id": "techiaith/whisper-large-v3-ft-verbatim-cy-en", "revision": "357e1784586765174eeb86731faaadf95c730b32", "runtime": "transformers"},
+    {"id": "techiaith/wav2vec2-xlsr-53-ft-btb-cv-cy", "revision": "b594d329547458c0d838f3683337025639e91e10", "runtime": "transformers"},
+    {"id": "techiaith/wav2vec2-btb-cv-ft-cv-cy", "revision": "78e4da6e30fa3bd6e3db8cde07f28df950d8c2e3", "runtime": "transformers"},
+    {"id": "techiaith/whisper-large-v3-ft-commonvoice-cy-en", "revision": "6628ef6a5b38282b9924014b1fac5667b33f844d", "runtime": "transformers"},
+    {"id": "techiaith/whisper-large-v3-turbo-ft-verbatim-cy-en", "revision": "7f1f77871f203bd4dc45b81db5a59f153b91f17b", "runtime": "transformers"},
+    {"id": "techiaith/whisper-base-ft-commonvoice-cy-en-cpp", "revision": "71380ca0fb3661d15b6ffd12ab967a5e00a2dbd7", "runtime": "whisper.cpp"},
+    {"id": "techiaith/whisper-base-ft-verbatim-cy-en-cpp", "revision": "6820fe305b84e14a159b92dffb29e0aafe54d7fa", "runtime": "whisper.cpp"},
+    {"id": "techiaith/whisper-base-ft-commonvoice-cy-cpp", "revision": "e07c902809855a0044f5bf620ac0f4cd7863fa93", "runtime": "whisper.cpp"},
+    {"id": "techiaith/whisper-large-v3-ft-verbatim-cy-en-ct2", "revision": "7a194a7ecd1e1a7c5e0f2ab572b395dfd596bd57", "runtime": "ctranslate2"},
+    {"id": "techiaith/kaldi-cy", "revision": "b39592897b404135a72ad7d9984032d0b6f13c11", "runtime": "vosk"},
+    {"id": "techiaith/kaldi-cy-2601", "revision": "4f0159b4349c5fa943b9bd64ce210cdc583848c5", "runtime": "vosk"},
+    {"id": "techiaith/whisper-large-ft-cy-en", "revision": "014eacd47a907794bf093d033488c5edff9cdf58", "runtime": "transformers"},
+    {"id": "techiaith/whisper-large-ft-cy-en-ct2", "revision": "8a910570a30fcb28ceda030bb127b7486a811158", "runtime": "ctranslate2"}
+  ]
+}

@@ -4,6 +4,7 @@ import json
 import csv
 import sys
 import tempfile
+import tomllib
 import unittest
 import wave
 from pathlib import Path
@@ -48,6 +49,24 @@ class VoiceMetricsTests(unittest.TestCase):
             self.assertEqual(metrics["sample_rate"], 16000)
             self.assertEqual(metrics["clipped_ratio"], 0.5)
             self.assertEqual(metrics["silence_ratio"], 0.5)
+
+    def test_techiaith_asr_catalog_is_exhaustive_and_pinned(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        snapshot = json.loads(
+            (root / "config" / "techiaith-asr-catalog.json").read_text(encoding="utf-8")
+        )
+        with (root / "config" / "voice-models.toml").open("rb") as handle:
+            configured = tomllib.load(handle)["models"]
+        by_source = {
+            item.get("source", "").removeprefix("https://huggingface.co/"): item
+            for item in configured
+            if item["task"] == "asr" and "/techiaith/" in item.get("source", "")
+        }
+        expected = {item["id"]: item for item in snapshot["models"]}
+        self.assertEqual(snapshot["count"], len(expected))
+        self.assertEqual(set(by_source), set(expected))
+        for model_id, item in expected.items():
+            self.assertEqual(by_source[model_id]["revision"], item["revision"])
 
 
 class VoiceRunTests(unittest.TestCase):
@@ -101,6 +120,39 @@ class VoiceRunTests(unittest.TestCase):
             summary = build_voice_report(output, root / "report.md", root / "report.csv")
             self.assertEqual(summary[0]["wer"], 0.0)
             self.assertEqual(summary[0]["cer"], 0.0)
+
+            models.write_text(
+                models.read_text(encoding="utf-8") + 'revision = "v2"\n',
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                run_voice_benchmark(
+                    models_path=models,
+                    suites_path=suites,
+                    root=root,
+                    output=output,
+                ),
+                (1, 0),
+            )
+            summary = build_voice_report(output, root / "report.md", root / "report.csv")
+            self.assertEqual(
+                {(row["model_revision"], row["cases"]) for row in summary},
+                {("", 1), ("v2", 1)},
+            )
+
+            with output.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps({
+                    "model_id": "mock-asr",
+                    "model_revision": "v2",
+                    "suite_id": "mock-suite",
+                    "task": "asr",
+                    "case_id": "one",
+                    "status": "error",
+                    "latency_seconds": 0.0,
+                }) + "\n")
+            summary = build_voice_report(output, root / "report.md", root / "report.csv")
+            v2 = next(row for row in summary if row["model_revision"] == "v2")
+            self.assertEqual((v2["cases"], v2["successful"], v2["failure_rate"]), (1, 0, 1.0))
 
     def test_jsonl_adapter_is_loaded_once(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
