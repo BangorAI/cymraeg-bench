@@ -24,6 +24,9 @@ Hugging Face wedi'i binio ar gyfer pob model.
 Mae'r addaswyr ASR swyddogol yn defnyddio protocol JSONL hirhoedlog: caiff y
 model ei lwytho unwaith, yna mesurir pob clip heb gynnwys cost cychwyn y model
 yn y latency na'r RTF.
+Mae addasydd sherpa-onnx hefyd yn derbyn `--decoding-method` a
+`--max-active-paths`, fel bod greedy a modified beam search yn gallu cael eu
+cymharu heb newid y pwysau.
 
 ## Protocol TTS
 

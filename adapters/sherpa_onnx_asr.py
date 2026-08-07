@@ -12,6 +12,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-dir", type=Path, required=True)
     parser.add_argument("--audio", type=Path)
+    parser.add_argument(
+        "--decoding-method",
+        choices=("greedy_search", "modified_beam_search"),
+        default="greedy_search",
+    )
+    parser.add_argument("--max-active-paths", type=int, default=4)
+    parser.add_argument("--num-threads", type=int, default=2)
     parser.add_argument("--serve-jsonl", action="store_true")
     args = parser.parse_args()
     import numpy as np
@@ -22,10 +29,11 @@ def main() -> None:
         encoder=str(args.model_dir / "encoder.onnx"),
         decoder=str(args.model_dir / "decoder.onnx"),
         joiner=str(args.model_dir / "joiner.onnx"),
-        num_threads=2,
+        num_threads=args.num_threads,
         sample_rate=16000,
         feature_dim=80,
-        decoding_method="greedy_search",
+        decoding_method=args.decoding_method,
+        max_active_paths=args.max_active_paths,
         enable_endpoint_detection=False,
     )
     def transcribe(audio: Path) -> str:
