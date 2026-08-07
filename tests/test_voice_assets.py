@@ -158,6 +158,36 @@ class VoiceAssetTests(unittest.TestCase):
             self.assertAlmostEqual(float(loaded["array"][0]), 0.0)
             self.assertGreater(float(loaded["array"][1]), 0.99)
 
+    def test_reconstructs_misaligned_ctc_lm_alphabet_from_acoustic_vocab(self) -> None:
+        class Tokenizer:
+            word_delimiter_token = "|"
+            unk_token = "[UNK]"
+            pad_token = "[PAD]"
+
+            @staticmethod
+            def convert_ids_to_tokens(token_id: int) -> str:
+                return {4: "<s>", 5: "[UNK]"}.get(token_id, "[PAD]")
+
+        with tempfile.TemporaryDirectory() as directory:
+            model = Path(directory)
+            (model / "vocab.json").write_text(json.dumps({
+                "|": 0,
+                "a": 1,
+                "ŷ": 2,
+                "[UNK]": 3,
+                "[PAD]": 4,
+            }))
+
+            labels = HF_ASR.ctc_decoder_labels(
+                model,
+                Tokenizer(),
+                vocab_size=6,
+                blank_token_id=3,
+            )
+
+            self.assertEqual(labels, [" ", "a", "ŷ", "", "<s>", "⁇"])
+            self.assertEqual(len(labels), len(set(labels)))
+
 
 if __name__ == "__main__":
     unittest.main()
