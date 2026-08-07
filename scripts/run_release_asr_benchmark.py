@@ -207,11 +207,8 @@ class ReleaseBenchmark:
         """HEAD the largest pinned artifact in every Techiaith ASR repo."""
         from huggingface_hub import HfApi, get_hf_file_metadata, hf_hub_url
 
-        catalog = json.loads(
-            (self.root / "config" / "techiaith-asr-catalog.json").read_text(
-                encoding="utf-8"
-            )
-        )
+        catalog_path = self.root / "config" / "techiaith-asr-catalog.json"
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
         failures: list[dict[str, str]] = []
         api = HfApi()
         for item in catalog["models"]:
@@ -358,17 +355,15 @@ class ReleaseBenchmark:
         return env
 
     def verify_specialized_assets(self, skipped: set[str]) -> None:
-        catalog = json.loads(
-            (self.root / "config" / "techiaith-asr-catalog.json").read_text(
-                encoding="utf-8"
-            )
-        )
-        expected = {
-            str(item["id"])
+        catalog_path = self.root / "config" / "techiaith-asr-catalog.json"
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+        catalog_assets = {
+            str(item["id"]): item
             for item in catalog["models"]
             if item.get("runtime") in SPECIALIZED_RUNTIMES
             and str(item["id"]) not in skipped
         }
+        expected = set(catalog_assets)
         manifest_path = self.root / "models" / "techiaith" / "assets.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         rows = manifest.get("assets")
@@ -385,6 +380,11 @@ class ReleaseBenchmark:
                 f"actual={sorted(by_id)}"
             )
         for repo_id, row in by_id.items():
+            item = catalog_assets[repo_id]
+            if row.get("revision") != item.get("revision"):
+                raise ValueError(f"Revision asset anghywir: {repo_id}")
+            if row.get("runtime") != item.get("runtime"):
+                raise ValueError(f"Runtime asset anghywir: {repo_id}")
             artifact = Path(str(row.get("artifact_path", "")))
             if not artifact.is_file():
                 raise FileNotFoundError(artifact)
@@ -397,10 +397,28 @@ class ReleaseBenchmark:
             if sha256_file(artifact) != expected_sha:
                 raise ValueError(f"SHA-256 asset anghywir: {repo_id}")
         self.results_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(
-            manifest_path,
-            self.results_dir / "techiaith-specialized-assets.json",
+        public_manifest = {
+            "schema_version": "techiaith-specialized-assets-v1",
+            "catalog_sha256": sha256_file(catalog_path),
+            "assets": [
+                {
+                    "id": repo_id,
+                    "revision": str(row.get("revision", "")),
+                    "runtime": str(row.get("runtime", "")),
+                    "artifact_filename": Path(str(row["artifact_path"])).name,
+                    "artifact_size_bytes": int(row["artifact_size_bytes"]),
+                    "artifact_sha256": str(row["artifact_sha256"]),
+                }
+                for repo_id, row in sorted(by_id.items())
+            ],
+        }
+        output = self.results_dir / "techiaith-specialized-assets.json"
+        temporary = output.with_suffix(".json.tmp")
+        temporary.write_text(
+            json.dumps(public_manifest, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
         )
+        temporary.replace(output)
         self.write_status(
             "pinned_assets_verified",
             specialized_assets=len(by_id),

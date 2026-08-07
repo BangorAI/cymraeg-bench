@@ -203,12 +203,14 @@ def test_asset_preparation_skips_only_deferred_repository(tmp_path: Path) -> Non
     (tmp_path / "config").mkdir()
     (tmp_path / "config" / "techiaith-asr-catalog.json").write_text(json.dumps({
         "models": [
-            {"id": "techiaith/kaldi-cy", "runtime": "vosk"},
-            {"id": "techiaith/kaldi-cy-2601", "runtime": "vosk"},
+            {"id": "techiaith/kaldi-cy", "runtime": "vosk", "revision": "kaldi-rev"},
+            {"id": "techiaith/kaldi-cy-2601", "runtime": "vosk", "revision": "2601-rev"},
         ],
     }))
     (env_dir / "assets.json").write_text(json.dumps({"assets": [{
         "id": "techiaith/kaldi-cy",
+        "revision": "kaldi-rev",
+        "runtime": "vosk",
         "artifact_path": str(artifact),
         "artifact_size_bytes": artifact.stat().st_size,
         "artifact_sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
@@ -229,6 +231,11 @@ def test_asset_preparation_skips_only_deferred_repository(tmp_path: Path) -> Non
     assert env["TECHIAITH_KALDI_DIR"] == "/models/kaldi-cy"
     copied = tmp_path / "results" / "voice-v0.1" / "techiaith-specialized-assets.json"
     assert copied.is_file()
+    public_manifest = json.loads(copied.read_text())
+    assert public_manifest["schema_version"] == "techiaith-specialized-assets-v1"
+    assert public_manifest["assets"][0]["artifact_filename"] == "kaldi.tar.gz"
+    assert "artifact_path" not in public_manifest["assets"][0]
+    assert str(tmp_path) not in copied.read_text()
 
 
 def test_partial_gate_is_explicit_and_uses_only_completed_revisions() -> None:
