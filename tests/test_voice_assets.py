@@ -8,6 +8,7 @@ import tempfile
 import unittest
 import wave
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,6 +36,14 @@ assert HF_SPEC and HF_SPEC.loader
 HF_ASR = importlib.util.module_from_spec(HF_SPEC)
 HF_SPEC.loader.exec_module(HF_ASR)
 
+CT2_SPEC = importlib.util.spec_from_file_location(
+    "faster_whisper_asr",
+    ROOT / "adapters" / "faster_whisper_asr.py",
+)
+assert CT2_SPEC and CT2_SPEC.loader
+CT2_ASR = importlib.util.module_from_spec(CT2_SPEC)
+CT2_SPEC.loader.exec_module(CT2_ASR)
+
 
 def add_bytes(archive: tarfile.TarFile, name: str, content: bytes = b"x") -> None:
     member = tarfile.TarInfo(name)
@@ -43,6 +52,17 @@ def add_bytes(archive: tarfile.TarFile, name: str, content: bytes = b"x") -> Non
 
 
 class VoiceAssetTests(unittest.TestCase):
+    def test_ctranslate2_uses_fp16_on_cuda_without_weakening_comparator(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            self.assertEqual(
+                CT2_ASR.runtime_options("cuda:2"),
+                ("cuda", 2, "float16"),
+            )
+            self.assertEqual(
+                CT2_ASR.runtime_options("cpu"),
+                ("cpu", 0, "int8"),
+            )
+
     def test_safe_extract_and_find_vosk_root(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

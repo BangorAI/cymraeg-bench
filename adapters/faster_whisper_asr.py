@@ -8,6 +8,23 @@ import sys
 from pathlib import Path
 
 
+def runtime_options(requested_device: str) -> tuple[str, int, str]:
+    """Choose a quality-preserving CTranslate2 backend for the benchmark."""
+    if requested_device.startswith("cuda"):
+        device = "cuda"
+        device_index = int(requested_device.partition(":")[2] or "0")
+        # Do not quantize Techiaith comparators merely to make them cheaper to
+        # beat.  The release benchmark runs after training and the RTX 4090 can
+        # hold these models in FP16.
+        default_compute_type = "float16"
+    else:
+        device = requested_device
+        device_index = 0
+        default_compute_type = "int8"
+    compute_type = os.getenv("VOICE_BENCH_CT2_COMPUTE_TYPE", default_compute_type)
+    return device, device_index, compute_type
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True)
@@ -23,14 +40,7 @@ def main() -> None:
 
     model_path = snapshot_download(repo_id=args.model, revision=args.revision)
     requested_device = os.getenv("VOICE_BENCH_DEVICE", "cuda:0")
-    if requested_device.startswith("cuda"):
-        device = "cuda"
-        device_index = int(requested_device.partition(":")[2] or "0")
-        compute_type = os.getenv("VOICE_BENCH_CT2_COMPUTE_TYPE", "int8_float16")
-    else:
-        device = requested_device
-        device_index = 0
-        compute_type = os.getenv("VOICE_BENCH_CT2_COMPUTE_TYPE", "int8")
+    device, device_index, compute_type = runtime_options(requested_device)
     recognizer = WhisperModel(
         model_path,
         device=device,

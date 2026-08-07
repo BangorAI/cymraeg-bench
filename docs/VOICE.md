@@ -115,7 +115,11 @@ pinio; cedwir PyTorch y tu allan i'r extras oherwydd bod ei build CUDA/CPU yn
 dibynnu ar y peiriant.
 
 Mae'r modelau CTranslate2 yn lawrlwytho snapshot wedi'i binio drwy
-`huggingface_hub` ac yn defnyddio `faster-whisper`. Ar gyfer y tri artifact
+`huggingface_hub` ac yn defnyddio `faster-whisper`. Ar CUDA defnyddir FP16 fel
+nad yw quantization yn gwanhau comparator Techiaith; defnyddir INT8 ar CPU yn
+unig. Gellir gosod `VOICE_BENCH_CT2_COMPUTE_TYPE` yn benodol ar gyfer smoke
+test diagnostig, ond mae'r release benchmark 4090 yn cadw'r default FP16.
+Ar gyfer y tri artifact
 whisper.cpp, gosodwch `WHISPER_CPP_CLI` i'r executable `whisper-cli` a'r tri
 newidyn `TECHIAITH_WHISPER_BASE_*_MODEL` i'w ffeiliau `ggml-model.bin`. Ar gyfer
 Kaldi, gosodwch `TECHIAITH_KALDI_DIR` a `TECHIAITH_KALDI_2601_DIR` i'r

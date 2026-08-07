@@ -28,7 +28,7 @@ license = "Apache-2.0"
 
 [[models]]
 id = "techiaith-whisper-large-cy-en-2607-ct2"
-label = "Techiaith Whisper Large CY/EN (26.07, CTranslate2 INT8)"
+label = "Techiaith Whisper Large CY/EN (26.07, CTranslate2 FP16)"
 task = "asr"
 enabled = false
 protocol = "jsonl"
