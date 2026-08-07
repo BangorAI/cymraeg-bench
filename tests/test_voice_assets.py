@@ -6,6 +6,7 @@ import json
 import tarfile
 import tempfile
 import unittest
+import wave
 from pathlib import Path
 
 
@@ -25,6 +26,14 @@ PREFETCH_SPEC = importlib.util.spec_from_file_location(
 assert PREFETCH_SPEC and PREFETCH_SPEC.loader
 PREFETCH = importlib.util.module_from_spec(PREFETCH_SPEC)
 PREFETCH_SPEC.loader.exec_module(PREFETCH)
+
+HF_SPEC = importlib.util.spec_from_file_location(
+    "hf_asr",
+    ROOT / "adapters" / "hf_asr.py",
+)
+assert HF_SPEC and HF_SPEC.loader
+HF_ASR = importlib.util.module_from_spec(HF_SPEC)
+HF_SPEC.loader.exec_module(HF_ASR)
 
 
 def add_bytes(archive: tarfile.TarFile, name: str, content: bytes = b"x") -> None:
@@ -126,6 +135,28 @@ class VoiceAssetTests(unittest.TestCase):
             payload = json.loads(status.read_text())
             self.assertEqual(payload["stage"], "complete")
             self.assertEqual(payload["completed_models"], completed)
+
+    def test_hf_adapter_reads_pcm16_wav_without_ffmpeg(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            audio = Path(directory) / "stereo.wav"
+            with wave.open(str(audio), "wb") as destination:
+                destination.setnchannels(2)
+                destination.setsampwidth(2)
+                destination.setframerate(16000)
+                destination.writeframes(
+                    (1000).to_bytes(2, "little", signed=True)
+                    + (-1000).to_bytes(2, "little", signed=True)
+                    + (32767).to_bytes(2, "little", signed=True)
+                    + (32767).to_bytes(2, "little", signed=True)
+                )
+
+            loaded = HF_ASR.read_pcm16_wav(audio)
+
+            self.assertEqual(loaded["sampling_rate"], 16000)
+            self.assertEqual(loaded["array"].dtype.name, "float32")
+            self.assertEqual(loaded["array"].shape, (2,))
+            self.assertAlmostEqual(float(loaded["array"][0]), 0.0)
+            self.assertGreater(float(loaded["array"][1]), 0.99)
 
 
 if __name__ == "__main__":

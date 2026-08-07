@@ -5,6 +5,27 @@ import argparse
 import json
 import os
 import sys
+import wave
+from pathlib import Path
+
+
+def read_pcm16_wav(path: str | Path) -> dict[str, object]:
+    """Return the in-memory ASR pipeline input without requiring ffmpeg."""
+    import numpy as np
+
+    with wave.open(str(path), "rb") as source:
+        channels = source.getnchannels()
+        sample_width = source.getsampwidth()
+        sample_rate = source.getframerate()
+        frames = source.readframes(source.getnframes())
+    if sample_width != 2:
+        raise ValueError(f"Disgwyl WAV PCM16; cafwyd sample width {sample_width}")
+    samples = np.frombuffer(frames, dtype="<i2").astype(np.float32) / 32768.0
+    if channels > 1:
+        if samples.size % channels:
+            raise ValueError("Nid yw nifer samples WAV yn lluosrif o'r sianeli")
+        samples = samples.reshape(-1, channels).mean(axis=1, dtype=np.float32)
+    return {"array": samples, "sampling_rate": sample_rate}
 
 
 def main() -> None:
@@ -29,13 +50,14 @@ def main() -> None:
         device=device,
     )
     def transcribe(audio: str) -> str:
+        pipeline_input = read_pcm16_wav(audio)
         if args.language:
             result = recognizer(
-                audio,
+                pipeline_input,
                 generate_kwargs={"language": args.language, "task": "transcribe"},
             )
         else:
-            result = recognizer(audio)
+            result = recognizer(pipeline_input)
         return str(result["text"])
 
     if args.serve_jsonl:
