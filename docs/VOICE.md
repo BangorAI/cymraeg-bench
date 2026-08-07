@@ -41,6 +41,8 @@ defnyddio prawf gwrando dall, wedi'i hapdrefnu, gyda sgoriau 1–5 ar gyfer:
 4. rhythm a phwyslais.
 
 Ni ddylid cyfuno'r sgoriau dynol â WER mewn un rhif cyffredinol.
+Mae'r catalog yn trin tri speaker pro `cy_GB-bu_tts` (benyw Gogledd, benyw De,
+a gwryw Gogledd) fel amrywiadau ar wahân er eu bod yn rhannu'r un model 77 MB.
 
 ## Rhedeg
 

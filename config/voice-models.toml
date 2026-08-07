@@ -65,10 +65,34 @@ model_dir = "${DEWI_KALDI_2606_DIR}"
 
 [[models]]
 id = "techiaith-cy-gb-bu-tts"
-label = "Techiaith cy_GB-bu_tts"
+label = "Techiaith cy_GB-bu_tts — benyw Gogledd"
 task = "tts"
 enabled = false
-command = ["python", "{root}/adapters/piper_tts.py", "--model", "{model}", "--text-file", "{text_file}", "--output-wav", "{output_wav}"]
+command = ["python", "{root}/adapters/piper_tts.py", "--model", "{model}", "--speaker", "0", "--text-file", "{text_file}", "--output-wav", "{output_wav}"]
+source = "https://huggingface.co/techiaith/cy_GB-bu_tts"
+revision = "11cd29cd8680e3c13cb07a826e66138efa9ccb30"
+license = "CC0-1.0"
+[models.variables]
+model = "${TECHIAITH_CY_TTS_MODEL}"
+
+[[models]]
+id = "techiaith-cy-gb-bu-tts-benyw-de"
+label = "Techiaith cy_GB-bu_tts — benyw De"
+task = "tts"
+enabled = false
+command = ["python", "{root}/adapters/piper_tts.py", "--model", "{model}", "--speaker", "1", "--text-file", "{text_file}", "--output-wav", "{output_wav}"]
+source = "https://huggingface.co/techiaith/cy_GB-bu_tts"
+revision = "11cd29cd8680e3c13cb07a826e66138efa9ccb30"
+license = "CC0-1.0"
+[models.variables]
+model = "${TECHIAITH_CY_TTS_MODEL}"
+
+[[models]]
+id = "techiaith-cy-gb-bu-tts-gwryw-gogledd"
+label = "Techiaith cy_GB-bu_tts — gwryw Gogledd"
+task = "tts"
+enabled = false
+command = ["python", "{root}/adapters/piper_tts.py", "--model", "{model}", "--speaker", "2", "--text-file", "{text_file}", "--output-wav", "{output_wav}"]
 source = "https://huggingface.co/techiaith/cy_GB-bu_tts"
 revision = "11cd29cd8680e3c13cb07a826e66138efa9ccb30"
 license = "CC0-1.0"
