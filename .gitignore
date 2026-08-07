@@ -1,6 +1,7 @@
 .env*
 !.env.example
 .venv/
+.voice-packages*/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -8,6 +9,9 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+downloads/
+models/
+vendor/
 .coverage
 data/cache/
 data/private/*

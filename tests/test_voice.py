@@ -221,6 +221,68 @@ class VoiceRunTests(unittest.TestCase):
             self.assertEqual((completed, errors), (2, 0))
             self.assertEqual(marker.read_text(), "1")
 
+    def test_crashed_jsonl_adapter_restarts_and_failed_case_can_resume(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            audio = root / "sample.wav"
+            write_wav(audio, [0] * 1600)
+            manifest = root / "asr.jsonl"
+            manifest.write_text("\n".join([
+                json.dumps({"id": "one", "audio": "sample.wav", "reference": "Bore da"}),
+                json.dumps({"id": "two", "audio": "sample.wav", "reference": "Bore da"}),
+            ]) + "\n", encoding="utf-8")
+            marker = root / "crashed"
+            adapter = root / "adapter.py"
+            adapter.write_text("\n".join([
+                "import json, sys",
+                "from pathlib import Path",
+                "marker = Path(sys.argv[1])",
+                "print(json.dumps({'ready': True}), flush=True)",
+                "for line in sys.stdin:",
+                "    request = json.loads(line)",
+                "    if request.get('command') == 'shutdown': break",
+                "    if not marker.exists():",
+                "        marker.write_text('once')",
+                "        raise SystemExit(7)",
+                "    print(json.dumps({'text': 'bore da'}), flush=True)",
+            ]) + "\n", encoding="utf-8")
+            models = root / "models.toml"
+            models.write_text("\n".join([
+                "[[models]]",
+                'id = "crashy-asr"',
+                'label = "Crashy"',
+                'task = "asr"',
+                'protocol = "jsonl"',
+                "enabled = true",
+                f'command = ["{sys.executable}", "{adapter}", "{marker}"]',
+            ]) + "\n", encoding="utf-8")
+            suites = root / "suites.toml"
+            suites.write_text("\n".join([
+                "[[suites]]",
+                'id = "mock-suite"',
+                'label = "Mock"',
+                'task = "asr"',
+                'manifest = "asr.jsonl"',
+            ]) + "\n", encoding="utf-8")
+            output = root / "results.jsonl"
+            self.assertEqual(
+                run_voice_benchmark(
+                    models_path=models, suites_path=suites, root=root, output=output
+                ),
+                (1, 1),
+            )
+            self.assertEqual(
+                run_voice_benchmark(
+                    models_path=models, suites_path=suites, root=root, output=output
+                ),
+                (1, 0),
+            )
+            report = build_voice_report(output, root / "report.md", root / "report.csv")
+            self.assertEqual(
+                (report[0]["cases"], report[0]["successful"], report[0]["failure_rate"]),
+                (2, 2, 0.0),
+            )
+
     def test_blind_listening_pack_and_report(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

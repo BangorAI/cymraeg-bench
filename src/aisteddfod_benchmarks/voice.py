@@ -444,6 +444,8 @@ def run_voice_benchmark(
                         row["status"] = "ok"
                         completed += 1
                     except Exception as exc:  # each case is a durable checkpoint
+                        if adapter is not None and adapter.poll() is not None:
+                            adapter = None
                         row.update({
                             "status": "error",
                             "error_type": type(exc).__name__,

@@ -111,3 +111,18 @@ newidyn `TECHIAITH_WHISPER_BASE_*_MODEL` i'w ffeiliau `ggml-model.bin`. Ar gyfer
 Kaldi, gosodwch `TECHIAITH_KALDI_DIR` a `TECHIAITH_KALDI_2601_DIR` i'r
 cyfeiriaduron model sydd wedi'u dadbacio. Nid oes angen y newidynnau hyn oni bai
 bod yr IDs perthnasol wedi'u dewis.
+
+Ar y peiriant benchmark Linux/CUDA, mae'r ddwy sgript ganlynol yn adeiladu
+whisper.cpp ar y commit yn `config/voice-runtimes.env`, yn lawrlwytho'r tri
+`ggml-model.bin` a'r ddau archive Kaldi wrth eu SHA, ac yn creu ffeil env:
+
+```bash
+./scripts/bootstrap_whisper_cpp.sh
+python scripts/prepare_techiaith_asr_assets.py
+source models/techiaith/env.sh
+```
+
+Mae extraction y tar Kaldi yn gwrthod path traversal, links a device nodes.
+Cedwir `assets.json` ochr yn ochr â'r models i gofnodi SHA a llwybr pob asset;
+mae `models/`, `downloads/`, `vendor/` a'r dependency targets lleol wedi'u
+hepgor o Git.
