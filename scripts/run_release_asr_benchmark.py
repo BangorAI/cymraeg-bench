@@ -189,7 +189,7 @@ class ReleaseBenchmark:
 
     def check_model_access(self) -> list[dict[str, str]]:
         """HEAD the largest pinned artifact in every Techiaith ASR repo."""
-        from huggingface_hub import HfApi, hf_hub_download
+        from huggingface_hub import HfApi, get_hf_file_metadata, hf_hub_url
 
         catalog = json.loads(
             (self.root / "config" / "techiaith-asr-catalog.json").read_text(
@@ -208,12 +208,15 @@ class ReleaseBenchmark:
                     files_metadata=True,
                 )
                 filename = probe_filename(list(info.siblings))
-                hf_hub_download(
+                artifact_url = hf_hub_url(
                     repo_id=repo_id,
                     filename=filename,
                     revision=revision,
-                    dry_run=True,
                 )
+                # A real metadata HEAD follows redirects to the pinned artifact
+                # and proves that the saved token can read it, without pulling
+                # multi-gigabyte weights during the access gate.
+                get_hf_file_metadata(artifact_url, token=True)
             except Exception as error:
                 failures.append({
                     "model": repo_id,

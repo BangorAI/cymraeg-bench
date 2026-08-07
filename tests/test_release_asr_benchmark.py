@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import subprocess
+import sys
 from argparse import Namespace
 from pathlib import Path
 from types import SimpleNamespace
@@ -114,6 +115,51 @@ def test_access_probe_rejects_metadata_without_sized_artifacts() -> None:
 
     with pytest.raises(ValueError, match="artifact model"):
         module.probe_filename([SimpleNamespace(rfilename="README.md", size=None)])
+
+
+def test_access_gate_heads_exact_largest_pinned_artifact(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args())
+    benchmark.root = tmp_path
+    config = tmp_path / "config"
+    config.mkdir()
+    (config / "techiaith-asr-catalog.json").write_text(
+        module.json.dumps({
+            "models": [{"id": "techiaith/model-cy", "revision": "abc123"}],
+        }),
+        encoding="utf-8",
+    )
+    calls = []
+
+    class FakeApi:
+        def model_info(self, repo_id, *, revision, files_metadata):
+            calls.append(("info", repo_id, revision, files_metadata))
+            return SimpleNamespace(siblings=[
+                SimpleNamespace(rfilename="README.md", size=100),
+                SimpleNamespace(rfilename="model.bin", size=20_000),
+            ])
+
+    def fake_url(*, repo_id, filename, revision):
+        calls.append(("url", repo_id, filename, revision))
+        return "https://huggingface.co/techiaith/model-cy/model.bin"
+
+    def fake_metadata(url, *, token):
+        calls.append(("head", url, token))
+
+    monkeypatch.setitem(sys.modules, "huggingface_hub", SimpleNamespace(
+        HfApi=FakeApi,
+        get_hf_file_metadata=fake_metadata,
+        hf_hub_url=fake_url,
+    ))
+
+    assert benchmark.check_model_access() == []
+    assert calls[-2:] == [
+        ("url", "techiaith/model-cy", "model.bin", "abc123"),
+        ("head", "https://huggingface.co/techiaith/model-cy/model.bin", True),
+    ]
 
 
 def test_model_command_retries_failed_cases_then_succeeds(tmp_path: Path) -> None:
