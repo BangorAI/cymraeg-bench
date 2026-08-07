@@ -31,6 +31,7 @@ def write_wav(path: Path, samples: list[int], sample_rate: int = 16000) -> None:
 class VoiceMetricsTests(unittest.TestCase):
     def test_normalization_and_edit_counts(self) -> None:
         self.assertEqual(normalize_transcript("Mae’n iawn!"), "MAE'N IAWN")
+        self.assertEqual(normalize_transcript("."), "")
         self.assertEqual(
             edit_counts(["MAE", "HI", "YMA"], ["MAE", "FO", "YMA", "RWAN"]),
             {"ref": 3, "ins": 1, "del": 0, "sub": 1},

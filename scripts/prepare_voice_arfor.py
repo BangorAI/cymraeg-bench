@@ -9,11 +9,11 @@ import json
 import wave
 from pathlib import Path
 
+from aisteddfod_benchmarks.voice import normalize_transcript
+
 
 REVISION = "0665ea3e755d9864985344512b7d346363b9b806"
 EXPECTED_SHA256 = "9f21512368e70237ad96cd938f4e352ef5ea99a403f049b5ef67813a67633d06"
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--parquet", type=Path, required=True)
@@ -41,7 +41,8 @@ def main() -> None:
             for row in batch.to_pylist():
                 current_index = source_index
                 source_index += 1
-                if row.get("language") != "cy" or not str(row.get("sentence", "")).strip():
+                sentence = str(row.get("sentence", ""))
+                if row.get("language") != "cy" or not normalize_transcript(sentence):
                     continue
                 case_id = f"arfor-test-{current_index:06d}"
                 audio = audio_dir / f"{case_id}.wav"
@@ -54,7 +55,7 @@ def main() -> None:
                 item = {
                     "id": case_id,
                     "audio": f"audio/{audio.name}",
-                    "reference": str(row["sentence"]),
+                    "reference": sentence,
                     "metadata": {
                         "accent": row.get("accent", ""),
                         "language": "cy",
