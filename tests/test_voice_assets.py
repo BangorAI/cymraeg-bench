@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import json
 import tarfile
 import tempfile
 import unittest
@@ -16,6 +17,14 @@ SPEC = importlib.util.spec_from_file_location(
 assert SPEC and SPEC.loader
 ASSETS = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ASSETS)
+
+PREFETCH_SPEC = importlib.util.spec_from_file_location(
+    "prefetch_techiaith_asr_snapshots",
+    ROOT / "scripts" / "prefetch_techiaith_asr_snapshots.py",
+)
+assert PREFETCH_SPEC and PREFETCH_SPEC.loader
+PREFETCH = importlib.util.module_from_spec(PREFETCH_SPEC)
+PREFETCH_SPEC.loader.exec_module(PREFETCH)
 
 
 def add_bytes(archive: tarfile.TarFile, name: str, content: bytes = b"x") -> None:
@@ -85,6 +94,38 @@ class VoiceAssetTests(unittest.TestCase):
         self.assertIn("/usr/local/cuda/bin/nvcc", script)
         self.assertIn('-DCMAKE_CUDA_COMPILER="$CUDACXX"', script)
         self.assertIn("Methu canfod nvcc", script)
+
+    def test_snapshot_prefetch_uses_pinned_revisions_and_skips_special_assets(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = root / "catalog.json"
+            status = root / "status.json"
+            catalog.write_text(json.dumps({"models": [
+                {
+                    "id": "techiaith/whisper-base-ft-commonvoice-cy-cpp",
+                    "revision": "cpp-rev",
+                },
+                {"id": "techiaith/model-one", "revision": "one-rev"},
+                {"id": "techiaith/model-deferred", "revision": "deferred-rev"},
+            ]}))
+            calls = []
+
+            completed = PREFETCH.prefetch(
+                catalog_path=catalog,
+                status_path=status,
+                skipped={"techiaith/model-deferred"},
+                downloader=lambda **kwargs: calls.append(kwargs),
+            )
+
+            self.assertEqual(completed, ["techiaith/model-one"])
+            self.assertEqual(calls, [{
+                "repo_id": "techiaith/model-one",
+                "revision": "one-rev",
+                "token": True,
+            }])
+            payload = json.loads(status.read_text())
+            self.assertEqual(payload["stage"], "complete")
+            self.assertEqual(payload["completed_models"], completed)
 
 
 if __name__ == "__main__":
