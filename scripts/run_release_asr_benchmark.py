@@ -229,6 +229,8 @@ class ReleaseBenchmark:
         self,
         *,
         allow_deferred: bool = False,
+        waiting_stage: str = "waiting_for_model_access",
+        waiting_details: dict[str, object] | None = None,
     ) -> list[dict[str, str]]:
         """Check access without touching test data; optionally defer missing repos."""
         while True:
@@ -251,8 +253,9 @@ class ReleaseBenchmark:
                 )
                 return failures
             self.write_status(
-                "waiting_for_model_access",
+                waiting_stage,
                 inaccessible_models=failures,
+                **(waiting_details or {}),
             )
             names = ", ".join(item["model"] for item in failures)
             print(
@@ -507,6 +510,68 @@ class ReleaseBenchmark:
                 self.completed_models.append(model_id)
             self.report(env)
 
+    def benchmark_gate(
+        self,
+        rows: list[dict[str, str]],
+        *,
+        model_ids: list[str],
+        revisions: dict[str, str],
+        expected_techiaith_models: int,
+        provisional: bool = False,
+        deferred: list[dict[str, str]] | None = None,
+    ) -> dict[str, object]:
+        current_rows = {
+            row["model_id"]: row
+            for row in rows
+            if row["suite_id"] == SUITE_ID
+            and row["model_revision"] == revisions.get(row["model_id"], "")
+        }
+        missing = [model_id for model_id in model_ids if model_id not in current_rows]
+        incomplete = [
+            model_id
+            for model_id, row in current_rows.items()
+            if model_id in model_ids
+            and (
+                int(row["cases"]) != EXPECTED_CASES
+                or int(row["successful"]) != EXPECTED_CASES
+            )
+        ]
+        if missing or incomplete:
+            raise RuntimeError(
+                f"Leaderboard anghyflawn: missing={missing}, incomplete={incomplete}"
+            )
+        bangor_wer = float(current_rows["bangorai-zipformer-cy"]["wer"])
+        tech_rows = {
+            model_id: current_rows[model_id]
+            for model_id in model_ids
+            if model_id.startswith("techiaith-")
+        }
+        if len(tech_rows) != expected_techiaith_models:
+            raise RuntimeError(
+                f"Disgwyl {expected_techiaith_models} canlyniad Techiaith; "
+                f"cafwyd {len(tech_rows)}"
+            )
+        strongest_id, strongest_row = min(
+            tech_rows.items(), key=lambda item: float(item[1]["wer"])
+        )
+        strongest_wer = float(strongest_row["wer"])
+        gate: dict[str, object] = {
+            "passed": bangor_wer < strongest_wer,
+            "provisional": provisional,
+            "bangorai_wer": bangor_wer,
+            "strongest_techiaith_model": strongest_id,
+            "strongest_techiaith_wer": strongest_wer,
+            "margin": strongest_wer - bangor_wer,
+            "techiaith_models": len(tech_rows),
+            "model_revisions": {
+                model_id: revisions[model_id]
+                for model_id in model_ids
+            },
+        }
+        if deferred:
+            gate["deferred_models"] = deferred
+        return gate
+
     def execute(self) -> None:
         # Surface access problems immediately, but do not let a gated comparator
         # idle the training/finalization path or the other benchmark runs.
@@ -540,16 +605,36 @@ class ReleaseBenchmark:
         )
 
         if deferred_model_ids:
-            self.report(env)
+            rows = self.report(env)
+            gate = self.benchmark_gate(
+                rows,
+                model_ids=available_model_ids,
+                revisions=revisions,
+                expected_techiaith_models=19 - len(deferred_model_ids),
+                provisional=True,
+                deferred=deferred,
+            )
+            partial_stage = (
+                "partial_complete_waiting_for_model_access"
+                if gate["passed"]
+                else "partial_gate_failed_waiting_for_model_access"
+            )
             self.write_status(
-                "partial_complete_waiting_for_model_access",
+                partial_stage,
                 accessible_models_completed=len(available_model_ids),
                 inaccessible_models=deferred,
+                gate=gate,
             )
             # Durable successes are already in JSONL. Once access arrives only
             # the deferred model and its asset are added; completed runs are not
             # repeated.
-            self.wait_for_model_access()
+            self.wait_for_model_access(
+                waiting_stage=partial_stage,
+                waiting_details={
+                    "accessible_models_completed": len(available_model_ids),
+                    "gate": gate,
+                },
+            )
             env = self.prepare_assets(env)
             self.run_models(
                 [model_id for model_id in model_ids if model_id in deferred_model_ids],
@@ -558,48 +643,13 @@ class ReleaseBenchmark:
             )
 
         rows = self.report(env)
-        current_rows = {
-            row["model_id"]: row
-            for row in rows
-            if row["suite_id"] == SUITE_ID
-            and row["model_revision"] == revisions.get(row["model_id"], "")
-        }
-        missing = [model_id for model_id in model_ids if model_id not in current_rows]
-        incomplete = [
-            model_id
-            for model_id, row in current_rows.items()
-            if model_id in model_ids
-            and (int(row["cases"]) != EXPECTED_CASES or int(row["successful"]) != EXPECTED_CASES)
-        ]
-        if missing or incomplete:
-            raise RuntimeError(f"Leaderboard anghyflawn: missing={missing}, incomplete={incomplete}")
-        bangor_wer = float(current_rows["bangorai-zipformer-cy"]["wer"])
-        tech_rows = {
-            model_id: row
-            for model_id, row in current_rows.items()
-            if model_id.startswith("techiaith-")
-        }
-        if len(tech_rows) != 19:
-            raise RuntimeError(
-                f"Disgwyl 19 canlyniad Techiaith; cafwyd {len(tech_rows)}"
-            )
-        strongest_id, strongest_row = min(
-            tech_rows.items(), key=lambda item: float(item[1]["wer"])
+        gate = self.benchmark_gate(
+            rows,
+            model_ids=model_ids,
+            revisions=revisions,
+            expected_techiaith_models=19,
         )
-        strongest_wer = float(strongest_row["wer"])
-        passed = bangor_wer < strongest_wer
-        gate = {
-            "passed": passed,
-            "bangorai_wer": bangor_wer,
-            "strongest_techiaith_model": strongest_id,
-            "strongest_techiaith_wer": strongest_wer,
-            "margin": strongest_wer - bangor_wer,
-            "techiaith_models": len(tech_rows),
-            "model_revisions": {
-                model_id: revisions[model_id]
-                for model_id in model_ids
-            },
-        }
+        passed = bool(gate["passed"])
         self.write_status("complete" if passed else "gate_failed", gate=gate)
         print(json.dumps(gate, indent=2), flush=True)
         if not passed:

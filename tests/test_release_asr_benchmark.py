@@ -210,6 +210,63 @@ def test_asset_preparation_skips_only_deferred_repository(tmp_path: Path) -> Non
     assert env["TECHIAITH_KALDI_DIR"] == "/models/kaldi-cy"
 
 
+def test_partial_gate_is_explicit_and_uses_only_completed_revisions() -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args())
+    revisions = {
+        "bangorai-zipformer-cy": "bangor-rev",
+        "techiaith-one": "tech-rev",
+        "techiaith-deferred": "missing-rev",
+        "dewibrynjones-kaldi-cy-2606": "dewi-rev",
+    }
+    rows = [
+        {
+            "model_id": "bangorai-zipformer-cy",
+            "model_revision": "bangor-rev",
+            "suite_id": module.SUITE_ID,
+            "cases": str(module.EXPECTED_CASES),
+            "successful": str(module.EXPECTED_CASES),
+            "wer": "0.20",
+        },
+        {
+            "model_id": "techiaith-one",
+            "model_revision": "tech-rev",
+            "suite_id": module.SUITE_ID,
+            "cases": str(module.EXPECTED_CASES),
+            "successful": str(module.EXPECTED_CASES),
+            "wer": "0.25",
+        },
+        {
+            "model_id": "dewibrynjones-kaldi-cy-2606",
+            "model_revision": "dewi-rev",
+            "suite_id": module.SUITE_ID,
+            "cases": str(module.EXPECTED_CASES),
+            "successful": str(module.EXPECTED_CASES),
+            "wer": "0.30",
+        },
+    ]
+    completed = [
+        "bangorai-zipformer-cy",
+        "techiaith-one",
+        "dewibrynjones-kaldi-cy-2606",
+    ]
+    deferred = [{"model": "techiaith/deferred", "error": "403"}]
+
+    gate = benchmark.benchmark_gate(
+        rows,
+        model_ids=completed,
+        revisions=revisions,
+        expected_techiaith_models=1,
+        provisional=True,
+        deferred=deferred,
+    )
+
+    assert gate["passed"] is True
+    assert gate["provisional"] is True
+    assert gate["deferred_models"] == deferred
+    assert set(gate["model_revisions"]) == set(completed)
+
+
 def test_model_command_retries_failed_cases_then_succeeds(tmp_path: Path) -> None:
     module = load_release_module()
     benchmark = module.ReleaseBenchmark(benchmark_args())
