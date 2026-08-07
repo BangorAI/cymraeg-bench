@@ -10,6 +10,8 @@ import wave
 from pathlib import Path
 
 from aisteddfod_benchmarks.voice import (
+    VoiceModel,
+    _command,
     build_listening_pack,
     build_listening_report,
     build_voice_report,
@@ -30,6 +32,21 @@ def write_wav(path: Path, samples: list[int], sample_rate: int = 16000) -> None:
 
 
 class VoiceMetricsTests(unittest.TestCase):
+    def test_python_adapter_uses_the_benchmark_interpreter(self) -> None:
+        model = VoiceModel(
+            id="adapter",
+            label="Adapter",
+            task="asr",
+            command=("python", "adapter.py"),
+            protocol="jsonl",
+            enabled=False,
+            variables={},
+            source="",
+            revision="",
+            license="",
+        )
+        self.assertEqual(_command(model, {}), [sys.executable, "adapter.py"])
+
     def test_normalization_and_edit_counts(self) -> None:
         self.assertEqual(normalize_transcript("Mae’n iawn!"), "MAE'N IAWN")
         self.assertEqual(normalize_transcript("."), "")

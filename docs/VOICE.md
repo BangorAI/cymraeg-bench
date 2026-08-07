@@ -27,6 +27,10 @@ ailddosbarthu na defnyddio'r pwysau mewn cynnyrch heb eglurhad.
 Mae'r addaswyr ASR swyddogol yn defnyddio protocol JSONL hirhoedlog: caiff y
 model ei lwytho unwaith, yna mesurir pob clip heb gynnwys cost cychwyn y model
 yn y latency na'r RTF.
+Mae token gorchymyn llythrennol `python` yn cael ei ddatrys i `sys.executable`,
+fel bod yr adapter yn defnyddio'r un interpreter a dependency environment â'r
+harnais. Gellir rhoi llwybr interpreter absoliwt yn y catalog pan fo angen
+amgylchedd ar wahân.
 Mae addasydd sherpa-onnx hefyd yn derbyn `--decoding-method` a
 `--max-active-paths`, fel bod greedy a modified beam search yn gallu cael eu
 cymharu heb newid y pwysau.

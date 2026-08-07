@@ -10,6 +10,7 @@ import random
 import selectors
 import shutil
 import subprocess
+import sys
 import time
 import tomllib
 import unicodedata
@@ -191,9 +192,10 @@ def _select(items: Iterable[Any], wanted: set[str] | None) -> list[Any]:
 def _command(model: VoiceModel, values: dict[str, str]) -> list[str]:
     replacements = {**model.variables, **values}
     try:
-        return [part.format_map(replacements) for part in model.command]
+        command = [part.format_map(replacements) for part in model.command]
     except KeyError as exc:
         raise ValueError(f"Newidyn gorchymyn ar goll ar gyfer {model.id}: {exc.args[0]}") from exc
+    return [sys.executable if part == "python" else part for part in command]
 
 
 def _prediction(stdout: str) -> str:
