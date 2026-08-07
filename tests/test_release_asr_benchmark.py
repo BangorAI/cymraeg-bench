@@ -162,6 +162,54 @@ def test_access_gate_heads_exact_largest_pinned_artifact(
     ]
 
 
+def test_access_gate_can_defer_missing_model_without_sleep(tmp_path: Path) -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args())
+    benchmark.status = tmp_path / "status.json"
+    failures = [{
+        "model": "techiaith/kaldi-cy-2601",
+        "revision": "abc123",
+        "error": "GatedRepoError: 403",
+    }]
+    benchmark.check_model_access = lambda: failures
+
+    assert benchmark.wait_for_model_access(allow_deferred=True) == failures
+    status = module.json.loads(benchmark.status.read_text(encoding="utf-8"))
+    assert status["stage"] == "model_access_deferred"
+    assert status["accessible_techiaith_models"] == 18
+
+
+def test_deferred_repository_maps_to_exact_benchmark_model() -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args())
+
+    assert benchmark.model_ids_for_repositories({"techiaith/kaldi-cy-2601"}) == {
+        "techiaith-kaldi-cy-2601",
+    }
+
+
+def test_asset_preparation_skips_only_deferred_repository(tmp_path: Path) -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args())
+    benchmark.root = tmp_path
+    env_dir = tmp_path / "models" / "techiaith"
+    env_dir.mkdir(parents=True)
+    (env_dir / "env.sh").write_text(
+        "export TECHIAITH_KALDI_DIR=/models/kaldi-cy\n",
+        encoding="utf-8",
+    )
+    commands = []
+    benchmark.run = lambda command, *, env=None, cwd=None: commands.append(command)
+
+    env = benchmark.prepare_assets(
+        {},
+        skip_repositories={"techiaith/kaldi-cy-2601"},
+    )
+
+    assert commands[1][-2:] == ["--skip-model", "techiaith/kaldi-cy-2601"]
+    assert env["TECHIAITH_KALDI_DIR"] == "/models/kaldi-cy"
+
+
 def test_model_command_retries_failed_cases_then_succeeds(tmp_path: Path) -> None:
     module = load_release_module()
     benchmark = module.ReleaseBenchmark(benchmark_args())

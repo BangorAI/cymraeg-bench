@@ -68,6 +68,12 @@ def main() -> None:
         type=Path,
         default=root / "vendor" / "whisper.cpp" / "build" / "bin" / "whisper-cli",
     )
+    parser.add_argument(
+        "--skip-model",
+        action="append",
+        default=[],
+        help="Repo Hugging Face i'w ohirio os nad oes mynediad eto (ailadroddadwy)",
+    )
     args = parser.parse_args()
 
     from huggingface_hub import hf_hub_download
@@ -83,8 +89,11 @@ def main() -> None:
     args.downloads_dir.mkdir(parents=True, exist_ok=True)
     environment: dict[str, Path] = {}
     assets: list[dict[str, str]] = []
+    skipped = set(args.skip_model)
 
     for repo_id, variable in CPP_VARIABLES.items():
+        if repo_id in skipped:
+            continue
         item = models[repo_id]
         destination = args.models_dir / repo_id.split("/", 1)[1]
         destination.mkdir(parents=True, exist_ok=True)
@@ -103,6 +112,8 @@ def main() -> None:
         })
 
     for repo_id, variable in VOSK_VARIABLES.items():
+        if repo_id in skipped:
+            continue
         item = models[repo_id]
         slug = repo_id.split("/", 1)[1]
         download_dir = args.downloads_dir / slug

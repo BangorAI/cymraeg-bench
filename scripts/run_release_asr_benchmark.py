@@ -225,15 +225,31 @@ class ReleaseBenchmark:
                 })
         return failures
 
-    def wait_for_model_access(self) -> None:
-        """Wait without touching the test manifest until every weight is readable."""
+    def wait_for_model_access(
+        self,
+        *,
+        allow_deferred: bool = False,
+    ) -> list[dict[str, str]]:
+        """Check access without touching test data; optionally defer missing repos."""
         while True:
             self.write_status("checking_model_access")
             failures = self.check_model_access()
             if not failures:
                 self.write_status("model_access_verified", techiaith_models=19)
                 print(f"[{utc_now()}] Mynediad i bob un o'r 19 model wedi'i wirio", flush=True)
-                return
+                return []
+            if allow_deferred:
+                self.write_status(
+                    "model_access_deferred",
+                    accessible_techiaith_models=19 - len(failures),
+                    inaccessible_models=failures,
+                )
+                names = ", ".join(item["model"] for item in failures)
+                print(
+                    f"[{utc_now()}] Yn gohirio modelau heb fynediad: {names}",
+                    flush=True,
+                )
+                return failures
             self.write_status(
                 "waiting_for_model_access",
                 inaccessible_models=failures,
@@ -288,13 +304,21 @@ class ReleaseBenchmark:
         })
         return env
 
-    def prepare_assets(self, env: dict[str, str]) -> dict[str, str]:
+    def prepare_assets(
+        self,
+        env: dict[str, str],
+        *,
+        skip_repositories: set[str] | None = None,
+    ) -> dict[str, str]:
         self.write_status("preparing_pinned_assets")
         self.run([str(self.root / "scripts" / "bootstrap_whisper_cpp.sh")], env=env)
-        self.run([
+        command = [
             str(self.args.python),
             str(self.root / "scripts" / "prepare_techiaith_asr_assets.py"),
-        ], env=env)
+        ]
+        for repo_id in sorted(skip_repositories or set()):
+            command.extend(["--skip-model", repo_id])
+        self.run(command, env=env)
         env_file = self.root / "models" / "techiaith" / "env.sh"
         for line in env_file.read_text(encoding="utf-8").splitlines():
             if not line.startswith("export "):
@@ -400,6 +424,23 @@ class ReleaseBenchmark:
             raise RuntimeError(f"Disgwyl 19 model Techiaith; cafwyd {len(techiaith)}")
         return all_models, revisions
 
+    def model_ids_for_repositories(self, repo_ids: set[str]) -> set[str]:
+        """Map pinned Hugging Face repo IDs to their CymraegBench model IDs."""
+        with (self.root / "config" / "voice-models.toml").open("rb") as source:
+            models = tomllib.load(source)["models"]
+        mapped: dict[str, str] = {}
+        for item in models:
+            source_url = str(item.get("source", ""))
+            prefix = "https://huggingface.co/"
+            if source_url.startswith(prefix):
+                mapped[source_url.removeprefix(prefix)] = str(item["id"])
+        missing = repo_ids - set(mapped)
+        if missing:
+            raise RuntimeError(
+                "Methu mapio repo i fodel CymraegBench: " + ", ".join(sorted(missing))
+            )
+        return {mapped[repo_id] for repo_id in repo_ids}
+
     def voice_command(self, model_id: str, max_cases: int | None = None) -> list[str]:
         command = [
             str(self.args.python),
@@ -440,11 +481,41 @@ class ReleaseBenchmark:
         with csv_path.open(encoding="utf-8", newline="") as source:
             return list(csv.DictReader(source))
 
+    def run_models(
+        self,
+        model_ids: list[str],
+        *,
+        env: dict[str, str],
+        total_models: int,
+    ) -> None:
+        for model_id in model_ids:
+            self.run_model_command(
+                self.voice_command(model_id, max_cases=1),
+                env=env,
+                model_id=model_id,
+                stage="model_preflight",
+                model_count=total_models,
+            )
+            self.run_model_command(
+                self.voice_command(model_id),
+                env=env,
+                model_id=model_id,
+                stage="model_benchmark",
+                model_count=total_models,
+            )
+            if model_id not in self.completed_models:
+                self.completed_models.append(model_id)
+            self.report(env)
+
     def execute(self) -> None:
-        self.wait_for_model_access()
+        # Surface access problems immediately, but do not let a gated comparator
+        # idle the training/finalization path or the other benchmark runs.
+        self.wait_for_model_access(allow_deferred=True)
         release = self.wait_for_release()
+        deferred = self.wait_for_model_access(allow_deferred=True)
+        deferred_repositories = {item["model"] for item in deferred}
         env = self.install_runtime()
-        env = self.prepare_assets(env)
+        env = self.prepare_assets(env, skip_repositories=deferred_repositories)
         self.prepare_manifest(env)
         env = self.prepare_zipformer(release, env)
         self.run([
@@ -458,23 +529,33 @@ class ReleaseBenchmark:
         ], env=env)
 
         model_ids, revisions = self.model_ids()
-        for model_id in model_ids:
-            self.run_model_command(
-                self.voice_command(model_id, max_cases=1),
-                env=env,
-                model_id=model_id,
-                stage="model_preflight",
-                model_count=len(model_ids),
-            )
-            self.run_model_command(
-                self.voice_command(model_id),
-                env=env,
-                model_id=model_id,
-                stage="model_benchmark",
-                model_count=len(model_ids),
-            )
-            self.completed_models.append(model_id)
+        deferred_model_ids = self.model_ids_for_repositories(deferred_repositories)
+        available_model_ids = [
+            model_id for model_id in model_ids if model_id not in deferred_model_ids
+        ]
+        self.run_models(
+            available_model_ids,
+            env=env,
+            total_models=len(model_ids),
+        )
+
+        if deferred_model_ids:
             self.report(env)
+            self.write_status(
+                "partial_complete_waiting_for_model_access",
+                accessible_models_completed=len(available_model_ids),
+                inaccessible_models=deferred,
+            )
+            # Durable successes are already in JSONL. Once access arrives only
+            # the deferred model and its asset are added; completed runs are not
+            # repeated.
+            self.wait_for_model_access()
+            env = self.prepare_assets(env)
+            self.run_models(
+                [model_id for model_id in model_ids if model_id in deferred_model_ids],
+                env=env,
+                total_models=len(model_ids),
+            )
 
         rows = self.report(env)
         current_rows = {
