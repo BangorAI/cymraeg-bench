@@ -102,6 +102,20 @@ def test_prepare_zipformer_rejects_release_without_fingerprint() -> None:
         benchmark.prepare_zipformer({"selection": {}}, {})
 
 
+def test_wait_for_release_rejects_unknown_status_schema(tmp_path: Path) -> None:
+    module = load_release_module()
+    release = tmp_path / "release.json"
+    release.write_text(module.json.dumps({
+        "schema_version": "zipformer-release-finalization-status-v0",
+        "stage": "complete",
+    }))
+    benchmark = module.ReleaseBenchmark(benchmark_args(release_status=release))
+    benchmark.status = tmp_path / "benchmark-status.json"
+
+    with pytest.raises(RuntimeError, match="schema release Zipformer"):
+        benchmark.wait_for_release()
+
+
 def test_access_probe_selects_the_largest_real_artifact() -> None:
     module = load_release_module()
     siblings = [

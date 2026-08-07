@@ -196,6 +196,10 @@ class ReleaseBenchmark:
                 status = json.loads(self.release_status.read_text(encoding="utf-8"))
                 stage = status.get("stage")
                 if stage == "complete":
+                    if status.get("schema_version") != (
+                        "zipformer-release-finalization-status-v1"
+                    ):
+                        raise RuntimeError("Fersiwn schema release Zipformer annisgwyl")
                     return status
                 if stage == "failed":
                     raise RuntimeError(f"Methodd finalization y model: {status.get('error')}")
