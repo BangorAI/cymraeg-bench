@@ -47,6 +47,13 @@ Mae'r addasydd Transformers yn datrys y snapshot SHA cyfan i lwybr lleol cyn
 creu'r pipeline. Mae hyn yn pinio tokenizer a KenLM hefyd; nid yw'n dibynnu ar
 ymddygiad `pyctcdecode` sy'n gallu lawrlwytho'r language model o `main` hyd yn
 oed pan fo `revision` y model acwstig wedi'i osod.
+Yn revision piniedig
+`techiaith/wav2vec2-xlsr-53-ft-cy-en-withlm@3d462e5b85490b9e16438ed524bc3c0deed2485f`,
+mae'r `alphabet.json` cyhoeddedig yn cynnwys 73 label ond mae pen CTC y model
+yn allbynnu 46 logit. Mae'r addasydd yn canfod yr anghysondeb dimensiwn ac yn
+ail-greu'r alphabet o `vocab.json` a blank ID y model, gan gadw `lm.bin`,
+unigrams a pharamedrau KenLM o'r un snapshot yn union. Nid yw'n defnyddio
+tokenizer, LM na phwysau o revision arall.
 
 ## Protocol TTS
 
