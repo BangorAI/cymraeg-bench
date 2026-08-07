@@ -38,9 +38,17 @@ def safe_extract(archive: Path, destination: Path) -> None:
 
 
 def vosk_model_root(destination: Path) -> Path:
+    # Mae modelau Vosk diweddarach yn defnyddio am/, conf/ a graph/, ond mae'r
+    # ddau fodel Kaldi Cymraeg yn yr archif pinned yn defnyddio'r layout Vosk
+    # gwreiddiol, gwastad. Mae Vosk 0.3.45 yn cefnogi'r ddau.
     candidates = sorted(path.parent.parent for path in destination.rglob("am/final.mdl"))
     for candidate in candidates:
         if (candidate / "conf").is_dir():
+            return candidate
+    flat_required = ("final.mdl", "HCLG.fst", "words.txt", "mfcc.conf")
+    flat_candidates = sorted(path.parent for path in destination.rglob("final.mdl"))
+    for candidate in flat_candidates:
+        if all((candidate / name).is_file() for name in flat_required):
             return candidate
     raise FileNotFoundError(f"Methu canfod gwraidd model Vosk o dan {destination}")
 

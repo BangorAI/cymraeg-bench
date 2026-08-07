@@ -40,6 +40,22 @@ class VoiceAssetTests(unittest.TestCase):
                 extracted / "nested" / "model",
             )
 
+    def test_finds_original_flat_vosk_model_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model = root / "nested" / "model"
+            model.mkdir(parents=True)
+            for name in ("final.mdl", "HCLG.fst", "words.txt", "mfcc.conf"):
+                (model / name).write_bytes(b"x")
+            self.assertEqual(ASSETS.vosk_model_root(root), model)
+
+    def test_rejects_incomplete_flat_vosk_model_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "final.mdl").write_bytes(b"x")
+            with self.assertRaises(FileNotFoundError):
+                ASSETS.vosk_model_root(root)
+
     def test_safe_extract_rejects_path_traversal(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
