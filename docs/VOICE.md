@@ -146,6 +146,10 @@ python scripts/run_release_asr_benchmark.py \
   --python /path/to/zipformer-cymraeg/.venv/bin/python
 ```
 
+Mae'r runner yn mynnu `uv 0.5.29` yn union. Mae'n chwilio yn gyntaf am `--uv`,
+wedyn am `uv` wrth ymyl y `--python` penodol, ac yn olaf ar `PATH`; mae hyn yn
+atal environment SSH gwahanol rhag defnyddio fersiwn export anghydnaws.
+
 Ni fydd y gate yn pasio oni bai bod BangorAI wedi cwblhau 3,445/3,445 ac â WER
 is na'r gorau o bob un o'r 19 model Techiaith ar yr un manifest. Cedwir statws
 peiriant-ddarllenadwy yn `runs/voice-v0.1-status.json` a'r leaderboard o dan

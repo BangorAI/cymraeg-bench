@@ -21,6 +21,7 @@ from pathlib import Path
 
 SUITE_ID = "arfor-test-clean-v0.1"
 EXPECTED_CASES = 3445
+UV_VERSION = "0.5.29"
 
 
 def probe_filename(siblings: list[object]) -> str:
@@ -137,6 +138,32 @@ class ReleaseBenchmark:
                 )
                 time.sleep(self.args.model_retry_delay)
 
+    def resolve_uv(self) -> Path:
+        """Resolve and verify the exact uv used to export the locked runtime."""
+        candidates: list[Path] = []
+        if self.args.uv is not None:
+            candidates.append(self.args.uv.expanduser())
+        candidates.append(self.args.python.resolve().parent / "uv")
+        on_path = shutil.which("uv")
+        if on_path:
+            candidates.append(Path(on_path))
+        selected = next((path.resolve() for path in candidates if path.is_file()), None)
+        if selected is None:
+            raise FileNotFoundError(
+                f"uv {UV_VERSION} ar goll; gosodwch ef wrth ymyl --python neu rhowch --uv"
+            )
+        version = subprocess.run(
+            [str(selected), "--version"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        if version.split()[:2] != ["uv", UV_VERSION]:
+            raise RuntimeError(
+                f"Fersiwn uv annisgwyl: {version!r}; disgwyl uv {UV_VERSION}"
+            )
+        return selected
+
     def wait_for_release(self) -> dict[str, object]:
         self.write_status("waiting_for_release_bundle")
         last_report = 0.0
@@ -215,8 +242,9 @@ class ReleaseBenchmark:
         requirements = self.root / "runs" / "voice-release-requirements.txt"
         if not marker.is_file() or marker.read_text(encoding="utf-8").strip() != lock_hash:
             self.write_status("installing_locked_runtime", lock_sha256=lock_hash)
+            uv = self.resolve_uv()
             self.run([
-                "uv",
+                str(uv),
                 "export",
                 "--locked",
                 "--extra",
@@ -496,6 +524,7 @@ def main() -> None:
     parser.add_argument("--arfor-parquet", type=Path, required=True)
     parser.add_argument("--dewi-model-dir", type=Path)
     parser.add_argument("--python", type=Path, default=Path(sys.executable))
+    parser.add_argument("--uv", type=Path)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--timeout", type=float, default=600.0)
     parser.add_argument("--poll-interval", type=int, default=60)

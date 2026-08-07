@@ -29,6 +29,7 @@ def benchmark_args(**updates: object) -> Namespace:
         "arfor_parquet": ROOT / "missing-arfor.parquet",
         "dewi_model_dir": None,
         "python": Path("/usr/bin/python3"),
+        "uv": None,
         "device": "cuda:0",
         "timeout": 600.0,
         "poll_interval": 60,
@@ -162,3 +163,28 @@ def test_model_command_raises_after_bounded_attempts(tmp_path: Path) -> None:
         )
 
     assert len(attempts) == 2
+
+
+def test_resolve_uv_prefers_verified_binary_beside_python(tmp_path: Path) -> None:
+    module = load_release_module()
+    binary_dir = tmp_path / "bin"
+    binary_dir.mkdir()
+    python = binary_dir / "python"
+    python.touch()
+    uv = binary_dir / "uv"
+    uv.write_text("#!/bin/sh\necho 'uv 0.5.29'\n", encoding="utf-8")
+    uv.chmod(0o755)
+    benchmark = module.ReleaseBenchmark(benchmark_args(python=python))
+
+    assert benchmark.resolve_uv() == uv.resolve()
+
+
+def test_resolve_uv_rejects_unpinned_version(tmp_path: Path) -> None:
+    module = load_release_module()
+    uv = tmp_path / "uv"
+    uv.write_text("#!/bin/sh\necho 'uv 9.9.9'\n", encoding="utf-8")
+    uv.chmod(0o755)
+    benchmark = module.ReleaseBenchmark(benchmark_args(uv=uv))
+
+    with pytest.raises(RuntimeError, match="Fersiwn uv annisgwyl"):
+        benchmark.resolve_uv()
