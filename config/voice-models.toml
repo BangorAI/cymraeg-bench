@@ -51,6 +51,19 @@ license = "CC-BY-NC-3.0"
 model_dir = "${TECHIAITH_KALDI_DIR}"
 
 [[models]]
+id = "dewibrynjones-kaldi-cy-2606"
+label = "DewiBrynJones Kaldi Cymraeg 2606"
+task = "asr"
+enabled = false
+protocol = "jsonl"
+command = ["python", "{root}/adapters/vosk_asr.py", "--model-dir", "{model_dir}", "--serve-jsonl"]
+source = "https://huggingface.co/DewiBrynJones/kaldi-cy-2606"
+revision = "05873b77496de071d052a162aa2f91c34ff767d7"
+license = "Heb ei ddatgan yn metadata na model card y repo; meincnodi ymchwil yn unig"
+[models.variables]
+model_dir = "${DEWI_KALDI_2606_DIR}"
+
+[[models]]
 id = "techiaith-cy-gb-bu-tts"
 label = "Techiaith cy_GB-bu_tts"
 task = "tts"
