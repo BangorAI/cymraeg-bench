@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
+import json
 import subprocess
 import sys
 from argparse import Namespace
@@ -193,8 +195,24 @@ def test_asset_preparation_skips_only_deferred_repository(tmp_path: Path) -> Non
     module = load_release_module()
     benchmark = module.ReleaseBenchmark(benchmark_args())
     benchmark.root = tmp_path
+    benchmark.results_dir = tmp_path / "results" / "voice-v0.1"
     env_dir = tmp_path / "models" / "techiaith"
     env_dir.mkdir(parents=True)
+    artifact = tmp_path / "kaldi.tar.gz"
+    artifact.write_bytes(b"kaldi-pinned")
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config" / "techiaith-asr-catalog.json").write_text(json.dumps({
+        "models": [
+            {"id": "techiaith/kaldi-cy", "runtime": "vosk"},
+            {"id": "techiaith/kaldi-cy-2601", "runtime": "vosk"},
+        ],
+    }))
+    (env_dir / "assets.json").write_text(json.dumps({"assets": [{
+        "id": "techiaith/kaldi-cy",
+        "artifact_path": str(artifact),
+        "artifact_size_bytes": artifact.stat().st_size,
+        "artifact_sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+    }]}))
     (env_dir / "env.sh").write_text(
         "export TECHIAITH_KALDI_DIR=/models/kaldi-cy\n",
         encoding="utf-8",
@@ -209,6 +227,8 @@ def test_asset_preparation_skips_only_deferred_repository(tmp_path: Path) -> Non
 
     assert commands[1][-2:] == ["--skip-model", "techiaith/kaldi-cy-2601"]
     assert env["TECHIAITH_KALDI_DIR"] == "/models/kaldi-cy"
+    copied = tmp_path / "results" / "voice-v0.1" / "techiaith-specialized-assets.json"
+    assert copied.is_file()
 
 
 def test_partial_gate_is_explicit_and_uses_only_completed_revisions() -> None:

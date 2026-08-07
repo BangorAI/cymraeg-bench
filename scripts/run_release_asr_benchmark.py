@@ -22,6 +22,7 @@ from pathlib import Path
 SUITE_ID = "arfor-test-clean-v0.1"
 EXPECTED_CASES = 3445
 UV_VERSION = "0.5.29"
+SPECIALIZED_RUNTIMES = {"whisper.cpp", "vosk"}
 
 
 def probe_filename(siblings: list[object]) -> str:
@@ -353,7 +354,58 @@ class ReleaseBenchmark:
             env[name] = value
         if self.args.dewi_model_dir:
             env["DEWI_KALDI_2606_DIR"] = str(self.args.dewi_model_dir.resolve())
+        self.verify_specialized_assets(skip_repositories or set())
         return env
+
+    def verify_specialized_assets(self, skipped: set[str]) -> None:
+        catalog = json.loads(
+            (self.root / "config" / "techiaith-asr-catalog.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        expected = {
+            str(item["id"])
+            for item in catalog["models"]
+            if item.get("runtime") in SPECIALIZED_RUNTIMES
+            and str(item["id"]) not in skipped
+        }
+        manifest_path = self.root / "models" / "techiaith" / "assets.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        rows = manifest.get("assets")
+        if not isinstance(rows, list):
+            raise ValueError("Rhestr assets arbenigol ar goll")
+        by_id = {
+            str(row["id"]): row
+            for row in rows
+            if isinstance(row, dict) and row.get("id")
+        }
+        if set(by_id) != expected:
+            raise ValueError(
+                f"Assets arbenigol annisgwyl: expected={sorted(expected)}, "
+                f"actual={sorted(by_id)}"
+            )
+        for repo_id, row in by_id.items():
+            artifact = Path(str(row.get("artifact_path", "")))
+            if not artifact.is_file():
+                raise FileNotFoundError(artifact)
+            expected_size = int(row.get("artifact_size_bytes", -1))
+            if artifact.stat().st_size != expected_size:
+                raise ValueError(f"Maint asset anghywir: {repo_id}")
+            expected_sha = str(row.get("artifact_sha256", ""))
+            if not re.fullmatch(r"[0-9a-f]{64}", expected_sha):
+                raise ValueError(f"SHA-256 asset annilys: {repo_id}")
+            if sha256_file(artifact) != expected_sha:
+                raise ValueError(f"SHA-256 asset anghywir: {repo_id}")
+        self.results_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(
+            manifest_path,
+            self.results_dir / "techiaith-specialized-assets.json",
+        )
+        self.write_status(
+            "pinned_assets_verified",
+            specialized_assets=len(by_id),
+            skipped_repositories=sorted(skipped),
+        )
 
     def prepare_manifest(self, env: dict[str, str]) -> None:
         self.write_status("preparing_sealed_manifest")
