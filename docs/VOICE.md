@@ -131,9 +131,10 @@ mae `models/`, `downloads/`, `vendor/` a'r dependency targets lleol wedi'u
 hepgor o Git.
 
 Ar ôl i'r rheolydd hyfforddi gloi'r checkpoint a'r decoder gorau ar y set dev,
-gellir gadael y goruchwyliwr release yn rhedeg. Mae'n aros am y bundle ONNX/WASM,
-yn creu runtime Python o'r `uv.lock`, yn paratoi'r 19 model Techiaith pinned,
-yn ail-greu'r manifest ARFOR 3,445 achos, ac yn rhedeg un model ar y tro. Mae'r
+gellir gadael y goruchwyliwr release yn rhedeg. Mae'n gwirio mynediad i bob
+artifact Techiaith pinned cyn cyffwrdd â'r manifest test, yn aros am y bundle
+ONNX/WASM, yn creu runtime Python o'r `uv.lock`, yn paratoi'r 19 model, yn
+ail-greu'r manifest ARFOR 3,445 achos, ac yn rhedeg un model ar y tro. Mae'r
 JSONL yn checkpointio pob achos, felly gellir ailgychwyn yr un gorchymyn:
 
 ```bash
@@ -150,4 +151,7 @@ is na'r gorau o bob un o'r 19 model Techiaith ar yr un manifest. Cedwir statws
 peiriant-ddarllenadwy yn `runs/voice-v0.1-status.json` a'r leaderboard o dan
 `results/voice-v0.1/`. Mae revision rhes BangorAI yn fingerprint SHA-256 o'r
 union bundle WASM terfynol, felly ni all canlyniad hen checkpoint basio gate
-release newydd.
+release newydd. Os bydd adapter neu achos yn methu dros dro, mae'r runner yn
+ailafael hyd at dair gwaith yn ddiofyn (`--model-attempts`), gan ail-redeg dim
+ond yr achosion coll neu aflwyddiannus; mae'n dal i fethu'r release os nad yw
+pob un o'r 3,445 achos yn llwyddo.

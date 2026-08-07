@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 from argparse import Namespace
 from pathlib import Path
 from types import SimpleNamespace
@@ -32,6 +33,8 @@ def benchmark_args(**updates: object) -> Namespace:
         "timeout": 600.0,
         "poll_interval": 60,
         "access_poll_interval": 600,
+        "model_attempts": 3,
+        "model_retry_delay": 0,
     }
     values.update(updates)
     return Namespace(**values)
@@ -110,3 +113,52 @@ def test_access_probe_rejects_metadata_without_sized_artifacts() -> None:
 
     with pytest.raises(ValueError, match="artifact model"):
         module.probe_filename([SimpleNamespace(rfilename="README.md", size=None)])
+
+
+def test_model_command_retries_failed_cases_then_succeeds(tmp_path: Path) -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args())
+    benchmark.status = tmp_path / "status.json"
+    attempts = []
+
+    def flaky_run(command, *, env=None, cwd=None):
+        attempts.append(list(command))
+        if len(attempts) < 3:
+            raise subprocess.CalledProcessError(1, command)
+
+    benchmark.run = flaky_run
+    benchmark.run_model_command(
+        ["voice", "run"],
+        env={},
+        model_id="model-cy",
+        stage="model_benchmark",
+        model_count=21,
+    )
+
+    assert len(attempts) == 3
+    status = module.json.loads(benchmark.status.read_text(encoding="utf-8"))
+    assert status["stage"] == "model_benchmark"
+    assert status["attempt"] == 3
+
+
+def test_model_command_raises_after_bounded_attempts(tmp_path: Path) -> None:
+    module = load_release_module()
+    benchmark = module.ReleaseBenchmark(benchmark_args(model_attempts=2))
+    benchmark.status = tmp_path / "status.json"
+    attempts = []
+
+    def broken_run(command, *, env=None, cwd=None):
+        attempts.append(list(command))
+        raise subprocess.CalledProcessError(7, command)
+
+    benchmark.run = broken_run
+    with pytest.raises(subprocess.CalledProcessError):
+        benchmark.run_model_command(
+            ["voice", "run"],
+            env={},
+            model_id="model-cy",
+            stage="model_benchmark",
+            model_count=21,
+        )
+
+    assert len(attempts) == 2

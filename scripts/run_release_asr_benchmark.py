@@ -95,6 +95,48 @@ class ReleaseBenchmark:
         print(f"[{utc_now()}] Rhedeg: {' '.join(command)}", flush=True)
         subprocess.run(command, cwd=cwd or self.root, env=env, check=True)
 
+    def run_model_command(
+        self,
+        command: list[str],
+        *,
+        env: dict[str, str],
+        model_id: str,
+        stage: str,
+        model_count: int,
+    ) -> None:
+        """Retry only failed/missing cases; the voice runner skips durable successes."""
+        for attempt in range(1, self.args.model_attempts + 1):
+            self.write_status(
+                stage,
+                current_model=model_id,
+                model_count=model_count,
+                attempt=attempt,
+                max_attempts=self.args.model_attempts,
+            )
+            try:
+                self.run(command, env=env)
+                return
+            except subprocess.CalledProcessError as error:
+                if attempt >= self.args.model_attempts:
+                    raise
+                self.write_status(
+                    "model_retry_wait",
+                    current_model=model_id,
+                    model_count=model_count,
+                    failed_stage=stage,
+                    failed_attempt=attempt,
+                    max_attempts=self.args.model_attempts,
+                    returncode=error.returncode,
+                    retry_delay_seconds=self.args.model_retry_delay,
+                )
+                print(
+                    f"[{utc_now()}] {model_id}: methodd {stage} attempt "
+                    f"{attempt}/{self.args.model_attempts}; yn ailafael mewn "
+                    f"{self.args.model_retry_delay}s",
+                    flush=True,
+                )
+                time.sleep(self.args.model_retry_delay)
+
     def wait_for_release(self) -> dict[str, object]:
         self.write_status("waiting_for_release_bundle")
         last_report = 0.0
@@ -380,18 +422,20 @@ class ReleaseBenchmark:
 
         model_ids, revisions = self.model_ids()
         for model_id in model_ids:
-            self.write_status(
-                "model_preflight",
-                current_model=model_id,
+            self.run_model_command(
+                self.voice_command(model_id, max_cases=1),
+                env=env,
+                model_id=model_id,
+                stage="model_preflight",
                 model_count=len(model_ids),
             )
-            self.run(self.voice_command(model_id, max_cases=1), env=env)
-            self.write_status(
-                "model_benchmark",
-                current_model=model_id,
+            self.run_model_command(
+                self.voice_command(model_id),
+                env=env,
+                model_id=model_id,
+                stage="model_benchmark",
                 model_count=len(model_ids),
             )
-            self.run(self.voice_command(model_id), env=env)
             self.completed_models.append(model_id)
             self.report(env)
 
@@ -456,7 +500,13 @@ def main() -> None:
     parser.add_argument("--timeout", type=float, default=600.0)
     parser.add_argument("--poll-interval", type=int, default=60)
     parser.add_argument("--access-poll-interval", type=int, default=600)
+    parser.add_argument("--model-attempts", type=int, default=3)
+    parser.add_argument("--model-retry-delay", type=int, default=30)
     args = parser.parse_args()
+    if args.model_attempts < 1:
+        parser.error("Rhaid i --model-attempts fod yn bositif")
+    if args.model_retry_delay < 0:
+        parser.error("Ni all --model-retry-delay fod yn negatif")
     benchmark = ReleaseBenchmark(args)
     try:
         benchmark.execute()
