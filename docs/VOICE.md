@@ -148,7 +148,9 @@ python scripts/run_release_asr_benchmark.py \
 
 Mae'r runner yn mynnu `uv 0.5.29` yn union. Mae'n chwilio yn gyntaf am `--uv`,
 wedyn am `uv` wrth ymyl y `--python` penodol, ac yn olaf ar `PATH`; mae hyn yn
-atal environment SSH gwahanol rhag defnyddio fersiwn export anghydnaws.
+atal environment SSH gwahanol rhag defnyddio fersiwn export anghydnaws. Mae'r
+extra Linux hefyd yn pinio `sherpa-onnx-core==1.13.4` yn uniongyrchol fel bod ei
+wheel a'i SHA-256 yn bresennol pan osodir gyda `pip --require-hashes`.
 
 Ni fydd y gate yn pasio oni bai bod BangorAI wedi cwblhau 3,445/3,445 ac â WER
 is na'r gorau o bob un o'r 19 model Techiaith ar yr un manifest. Cedwir statws

@@ -190,3 +190,12 @@ def test_resolve_uv_rejects_unpinned_version(tmp_path: Path) -> None:
 
     with pytest.raises(RuntimeError, match="Fersiwn uv annisgwyl"):
         benchmark.resolve_uv()
+
+
+def test_linux_sherpa_core_is_directly_locked_for_require_hashes() -> None:
+    project = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    lock = (ROOT / "uv.lock").read_text(encoding="utf-8")
+
+    assert "sherpa-onnx-core==1.13.4 ; sys_platform == 'linux'" in project
+    assert 'name = "sherpa-onnx-core"' in lock
+    assert "sha256:367aa06cee90b3fd7959d4e071d6fc821710b859af399b4987e5c3119ee6ae2a" in lock

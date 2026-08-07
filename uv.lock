@@ -502,6 +502,7 @@ voice-asr = [
     { name = "librosa" },
     { name = "pyctcdecode" },
     { name = "sherpa-onnx" },
+    { name = "sherpa-onnx-core", marker = "sys_platform == 'linux'" },
     { name = "transformers" },
     { name = "vosk" },
 ]
@@ -524,6 +525,7 @@ requires-dist = [
     { name = "pyctcdecode", marker = "extra == 'voice-asr'", specifier = "==0.5.0" },
     { name = "sacrebleu", specifier = ">=2.4,<3" },
     { name = "sherpa-onnx", marker = "extra == 'voice-asr'", specifier = "==1.13.4" },
+    { name = "sherpa-onnx-core", marker = "sys_platform == 'linux' and extra == 'voice-asr'", specifier = "==1.13.4" },
     { name = "transformers", marker = "extra == 'voice-asr'", specifier = "==4.57.6" },
     { name = "vosk", marker = "extra == 'voice-asr'", specifier = "==0.3.45" },
 ]
@@ -2158,6 +2160,16 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/5a/4b/49b4be95af2e12bfa8a92a7eba720cc68e4da178847ffa4ddb66479d4e9c/sherpa_onnx-1.13.4-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:16b046f1c7ceecf666947d652c928278c377847db7f697c9e94af9feaf20ac2c", size = 4360312 },
     { url = "https://files.pythonhosted.org/packages/96/1c/a80bfad89846ccb1da4d18ef46bf364c83cff9514a0e298110c8de480e14/sherpa_onnx-1.13.4-cp314-cp314-win32.whl", hash = "sha256:39af016b9fb7c053da2270e44182fb8932eeab991dcdc963bbc4366324e9ec51", size = 1970019 },
     { url = "https://files.pythonhosted.org/packages/89/02/1e10f71be635a3f9ef793b07ab88ddb7afa82ab722f3ea275a4877da1bcb/sherpa_onnx-1.13.4-cp314-cp314-win_amd64.whl", hash = "sha256:cb1834182c4047b8edb1dceeed8d5cf7d6e10295a4079e5e0fea674b4314db06", size = 2308592 },
+]
+
+[[package]]
+name = "sherpa-onnx-core"
+version = "1.13.4"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/81/29/15859e896574230d5377738ef27e8647cbd19fa325d75b1a00074791798d/sherpa_onnx_core-1.13.4-py3-none-manylinux2014_aarch64.whl", hash = "sha256:b4e4d17eb0d5c569bf4c9effcbc3daef57cf7e2b8418e07ae90f90c9b60b35d5", size = 13023017 },
+    { url = "https://files.pythonhosted.org/packages/41/be/38c57721d71ee74d984b1ca21720a8ca8477d6d341026af24ff658866ef9/sherpa_onnx_core-1.13.4-py3-none-manylinux2014_x86_64.whl", hash = "sha256:367aa06cee90b3fd7959d4e071d6fc821710b859af399b4987e5c3119ee6ae2a", size = 10338839 },
+    { url = "https://files.pythonhosted.org/packages/7e/17/949ee6d5cff4ec9e2dcda014276a798b814e2eb80d35d820884e6e0614ff/sherpa_onnx_core-1.13.4-py3-none-manylinux_2_35_armv7l.whl", hash = "sha256:3b9cc7da5ce4a2333a9ae211f39c34dee981b13f2c9c8680fbf2d9636e87d617", size = 9889942 },
 ]
 
 [[package]]
