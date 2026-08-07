@@ -138,6 +138,8 @@ source models/techiaith/env.sh
 
 Mae extraction y tar Kaldi yn gwrthod path traversal, links a device nodes.
 Cedwir `assets.json` ochr yn ochr â'r models i gofnodi SHA a llwybr pob asset;
+mae'n cynnwys SHA-256 a maint yr union `ggml-model.bin` neu archive
+`model_cy.tar.gz`, yn ogystal â SHA commit y repo;
 mae `models/`, `downloads/`, `vendor/` a'r dependency targets lleol wedi'u
 hepgor o Git.
 

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shlex
 import tarfile
@@ -22,6 +23,18 @@ VOSK_VARIABLES = {
     "techiaith/kaldi-cy": "TECHIAITH_KALDI_DIR",
     "techiaith/kaldi-cy-2601": "TECHIAITH_KALDI_2601_DIR",
 }
+
+
+def artifact_metadata(path: Path) -> dict[str, object]:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for block in iter(lambda: source.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    return {
+        "artifact_path": str(path.resolve()),
+        "artifact_size_bytes": path.stat().st_size,
+        "artifact_sha256": digest.hexdigest(),
+    }
 
 
 def safe_extract(archive: Path, destination: Path) -> None:
@@ -109,6 +122,7 @@ def main() -> None:
             "revision": item["revision"],
             "runtime": item["runtime"],
             "path": str(model_path),
+            **artifact_metadata(model_path),
         })
 
     for repo_id, variable in VOSK_VARIABLES.items():
@@ -137,6 +151,7 @@ def main() -> None:
             "revision": item["revision"],
             "runtime": item["runtime"],
             "path": str(model_path),
+            **artifact_metadata(archive),
         })
 
     environment["WHISPER_CPP_CLI"] = args.whisper_cli.resolve()

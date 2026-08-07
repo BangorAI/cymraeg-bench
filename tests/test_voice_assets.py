@@ -52,6 +52,20 @@ def add_bytes(archive: tarfile.TarFile, name: str, content: bytes = b"x") -> Non
 
 
 class VoiceAssetTests(unittest.TestCase):
+    def test_specialized_asset_metadata_seals_bytes_and_size(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            artifact = Path(directory) / "model.bin"
+            artifact.write_bytes(b"pwysau-pinig")
+
+            metadata = ASSETS.artifact_metadata(artifact)
+
+            self.assertEqual(metadata["artifact_size_bytes"], 12)
+            self.assertEqual(
+                metadata["artifact_sha256"],
+                "6728534c99508a0469b4c7128c4a3bcb9c3fd1324bc21205745f30ab726c3395",
+            )
+            self.assertEqual(metadata["artifact_path"], str(artifact.resolve()))
+
     def test_ctranslate2_uses_fp16_on_cuda_without_weakening_comparator(self) -> None:
         with patch.dict("os.environ", {}, clear=True):
             self.assertEqual(
