@@ -101,6 +101,56 @@ class VoiceRunTests(unittest.TestCase):
             self.assertEqual(summary[0]["wer"], 0.0)
             self.assertEqual(summary[0]["cer"], 0.0)
 
+    def test_jsonl_adapter_is_loaded_once(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            audio = root / "sample.wav"
+            write_wav(audio, [0] * 1600)
+            manifest = root / "asr.jsonl"
+            manifest.write_text("\n".join([
+                json.dumps({"id": "one", "audio": "sample.wav", "reference": "Bore da"}),
+                json.dumps({"id": "two", "audio": "sample.wav", "reference": "Bore da"}),
+            ]) + "\n", encoding="utf-8")
+            marker = root / "loads.txt"
+            adapter = root / "adapter.py"
+            adapter.write_text(
+                "\n".join([
+                    "import json, sys",
+                    "from pathlib import Path",
+                    "marker = Path(sys.argv[1])",
+                    "marker.write_text(str(int(marker.read_text()) + 1) if marker.exists() else '1')",
+                    "print(json.dumps({'ready': True}), flush=True)",
+                    "for line in sys.stdin:",
+                    "    request = json.loads(line)",
+                    "    if request.get('command') == 'shutdown': break",
+                    "    print(json.dumps({'text': 'bore da'}), flush=True)",
+                ]) + "\n",
+                encoding="utf-8",
+            )
+            models = root / "models.toml"
+            models.write_text("\n".join([
+                "[[models]]",
+                'id = "persistent-asr"',
+                'label = "Persistent"',
+                'task = "asr"',
+                'protocol = "jsonl"',
+                "enabled = true",
+                f'command = ["{sys.executable}", "{adapter}", "{marker}"]',
+            ]) + "\n", encoding="utf-8")
+            suites = root / "suites.toml"
+            suites.write_text("\n".join([
+                "[[suites]]",
+                'id = "mock-suite"',
+                'label = "Mock"',
+                'task = "asr"',
+                'manifest = "asr.jsonl"',
+            ]) + "\n", encoding="utf-8")
+            completed, errors = run_voice_benchmark(
+                models_path=models, suites_path=suites, root=root, output=root / "results.jsonl"
+            )
+            self.assertEqual((completed, errors), (2, 0))
+            self.assertEqual(marker.read_text(), "1")
+
     def test_blind_listening_pack_and_report(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

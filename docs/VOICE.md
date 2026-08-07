@@ -18,6 +18,9 @@ Transformers a Piper ddefnyddio amgylcheddau annibynnol.
 Mae catalog v0.1 yn cynnwys addaswyr ar gyfer BangorAI Zipformer,
 `techiaith/whisper-large-v3-ft-verbatim-cy-en`, Wav2Vec2 Techiaith a
 Kaldi/Vosk Techiaith. Mae'r SHA Hugging Face wedi'i binio ar gyfer pob model.
+Mae'r addaswyr ASR swyddogol yn defnyddio protocol JSONL hirhoedlog: caiff y
+model ei lwytho unwaith, yna mesurir pob clip heb gynnwys cost cychwyn y model
+yn y latency na'r RTF.
 
 ## Protocol TTS
 

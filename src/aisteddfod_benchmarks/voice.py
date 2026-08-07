@@ -7,6 +7,7 @@ import math
 import os
 import re
 import random
+import selectors
 import shutil
 import subprocess
 import time
@@ -24,6 +25,7 @@ class VoiceModel:
     label: str
     task: str
     command: tuple[str, ...]
+    protocol: str
     enabled: bool
     variables: dict[str, str]
     source: str
@@ -55,6 +57,7 @@ def load_voice_models(path: Path) -> list[VoiceModel]:
             label=str(item["label"]),
             task=str(item["task"]),
             command=tuple(str(part) for part in item["command"]),
+            protocol=str(item.get("protocol", "oneshot")),
             enabled=bool(item.get("enabled", False)),
             variables={str(k): os.path.expandvars(str(v)) for k, v in item.get("variables", {}).items()},
             source=str(item.get("source", "")),
@@ -206,6 +209,74 @@ def _prediction(stdout: str) -> str:
     return value
 
 
+def _read_process_json(process: subprocess.Popen[str], timeout: float) -> dict[str, Any]:
+    if process.stdout is None:
+        raise RuntimeError("Nid oes stdout ar yr addasydd JSONL")
+    selector = selectors.DefaultSelector()
+    selector.register(process.stdout, selectors.EVENT_READ)
+    try:
+        if not selector.select(timeout):
+            raise TimeoutError(f"Dim ymateb gan yr addasydd ar ôl {timeout:.1f}s")
+        line = process.stdout.readline()
+    finally:
+        selector.close()
+    if not line:
+        code = process.poll()
+        raise RuntimeError(f"Daeth yr addasydd JSONL i ben (cod {code})")
+    payload = json.loads(line)
+    if not isinstance(payload, dict):
+        raise ValueError("Rhaid i ymateb yr addasydd JSONL fod yn wrthrych")
+    if payload.get("error"):
+        raise RuntimeError(str(payload["error"]))
+    return payload
+
+
+def _start_jsonl_adapter(model: VoiceModel, root: Path, timeout: float) -> subprocess.Popen[str]:
+    process = subprocess.Popen(
+        _command(model, {"root": str(root)}),
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+    )
+    try:
+        ready = _read_process_json(process, timeout)
+        if ready.get("ready") is not True:
+            raise RuntimeError(f"Ymateb parod annilys gan {model.id}: {ready}")
+    except Exception:
+        process.terminate()
+        process.wait(timeout=10)
+        raise
+    return process
+
+
+def _jsonl_request(
+    process: subprocess.Popen[str], request: dict[str, str], timeout: float
+) -> dict[str, Any]:
+    if process.stdin is None:
+        raise RuntimeError("Nid oes stdin ar yr addasydd JSONL")
+    process.stdin.write(json.dumps(request, ensure_ascii=False) + "\n")
+    process.stdin.flush()
+    return _read_process_json(process, timeout)
+
+
+def _stop_jsonl_adapter(process: subprocess.Popen[str] | None) -> None:
+    if process is None or process.poll() is not None:
+        return
+    try:
+        if process.stdin is not None:
+            process.stdin.write('{"command":"shutdown"}\n')
+            process.stdin.flush()
+        process.wait(timeout=10)
+    except (BrokenPipeError, subprocess.TimeoutExpired):
+        process.terminate()
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
+
+
 def _append_jsonl(path: Path, row: dict[str, Any]) -> None:
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
@@ -222,6 +293,9 @@ def validate_voice_catalog(models_path: Path, suites_path: Path, root: Path) -> 
             errors.append(f"Dim model {task}")
         if not any(item.task == task for item in suites):
             errors.append(f"Dim set {task}")
+    for model in models:
+        if model.protocol not in {"oneshot", "jsonl"}:
+            errors.append(f"Protocol anhysbys ar gyfer {model.id}: {model.protocol}")
     if len({item.id for item in models}) != len(models):
         errors.append("ID model llais wedi'i ddyblygu")
     if len({item.id for item in suites}) != len(suites):
@@ -269,91 +343,110 @@ def run_voice_benchmark(
         }
     completed = errors = 0
     for model in models:
-        for suite in suites:
-            if model.task != suite.task:
-                continue
-            cases = _read_jsonl(suite.manifest)
-            if max_cases is not None:
-                cases = cases[:max_cases]
-            for case in cases:
-                key = (model.id, suite.id, str(case["id"]))
-                if key in completed_keys:
+        adapter: subprocess.Popen[str] | None = None
+        try:
+            for suite in suites:
+                if model.task != suite.task:
                     continue
-                row: dict[str, Any] = {
-                    "schema_version": "voice-v0.1",
-                    "model_id": model.id,
-                    "model_label": model.label,
-                    "model_source": model.source,
-                    "model_revision": model.revision,
-                    "model_license": model.license,
-                    "suite_id": suite.id,
-                    "suite_source": suite.source,
-                    "suite_revision": suite.revision,
-                    "suite_license": suite.license,
-                    "task": suite.task,
-                    "case_id": str(case["id"]),
-                    "metadata": case.get("metadata", {}),
-                }
-                started = time.perf_counter()
-                try:
-                    if suite.task == "asr":
-                        audio = (suite.manifest.parent / str(case["audio"])).resolve()
-                        if not audio.is_file():
-                            raise FileNotFoundError(audio)
-                        audio_stats = wav_metrics(audio)
-                        command = _command(model, {"audio": str(audio), "root": str(root)})
-                        process = subprocess.run(
-                            command, capture_output=True, text=True, timeout=timeout, check=True
-                        )
-                        latency = time.perf_counter() - started
-                        prediction = _prediction(process.stdout)
-                        row.update(transcript_metrics(str(case["reference"]), prediction))
+                cases = _read_jsonl(suite.manifest)
+                if max_cases is not None:
+                    cases = cases[:max_cases]
+                for case in cases:
+                    key = (model.id, suite.id, str(case["id"]))
+                    if key in completed_keys:
+                        continue
+                    row: dict[str, Any] = {
+                        "schema_version": "voice-v0.1",
+                        "model_id": model.id,
+                        "model_label": model.label,
+                        "model_source": model.source,
+                        "model_revision": model.revision,
+                        "model_license": model.license,
+                        "suite_id": suite.id,
+                        "suite_source": suite.source,
+                        "suite_revision": suite.revision,
+                        "suite_license": suite.license,
+                        "task": suite.task,
+                        "case_id": str(case["id"]),
+                        "metadata": case.get("metadata", {}),
+                    }
+                    started = time.perf_counter()
+                    try:
+                        if suite.task == "asr":
+                            audio = (suite.manifest.parent / str(case["audio"])).resolve()
+                            if not audio.is_file():
+                                raise FileNotFoundError(audio)
+                            audio_stats = wav_metrics(audio)
+                            if model.protocol == "jsonl":
+                                if adapter is None:
+                                    adapter = _start_jsonl_adapter(model, root, timeout)
+                                    started = time.perf_counter()
+                                response = _jsonl_request(adapter, {"audio": str(audio)}, timeout)
+                                prediction = str(response.get("text", ""))
+                            else:
+                                command = _command(model, {"audio": str(audio), "root": str(root)})
+                                process = subprocess.run(
+                                    command,
+                                    capture_output=True,
+                                    text=True,
+                                    timeout=timeout,
+                                    check=True,
+                                )
+                                prediction = _prediction(process.stdout)
+                            latency = time.perf_counter() - started
+                            row.update(transcript_metrics(str(case["reference"]), prediction))
+                            row.update({
+                                "reference": str(case["reference"]),
+                                "prediction": prediction,
+                                "audio": str(audio),
+                                "audio_metrics": audio_stats,
+                                "latency_seconds": latency,
+                                "real_time_factor": latency / audio_stats["duration_seconds"]
+                                if audio_stats["duration_seconds"] else None,
+                            })
+                        else:
+                            destination = audio_dir / model.id / suite.id / f"{case['id']}.wav"
+                            destination.parent.mkdir(parents=True, exist_ok=True)
+                            text_file = destination.with_suffix(".txt")
+                            text_file.write_text(str(case["text"]) + "\n", encoding="utf-8")
+                            command = _command(model, {
+                                "text": str(case["text"]),
+                                "text_file": str(text_file),
+                                "output_wav": str(destination),
+                                "root": str(root),
+                            })
+                            subprocess.run(
+                                command,
+                                capture_output=True,
+                                text=True,
+                                timeout=timeout,
+                                check=True,
+                            )
+                            latency = time.perf_counter() - started
+                            if not destination.is_file():
+                                raise RuntimeError(f"Ni chrewyd {destination}")
+                            audio_stats = wav_metrics(destination)
+                            row.update({
+                                "text": str(case["text"]),
+                                "output_wav": str(destination),
+                                "audio_metrics": audio_stats,
+                                "latency_seconds": latency,
+                                "real_time_factor": latency / audio_stats["duration_seconds"]
+                                if audio_stats["duration_seconds"] else None,
+                            })
+                        row["status"] = "ok"
+                        completed += 1
+                    except Exception as exc:  # each case is a durable checkpoint
                         row.update({
-                            "reference": str(case["reference"]),
-                            "prediction": prediction,
-                            "audio": str(audio),
-                            "audio_metrics": audio_stats,
-                            "latency_seconds": latency,
-                            "real_time_factor": latency / audio_stats["duration_seconds"]
-                            if audio_stats["duration_seconds"] else None,
+                            "status": "error",
+                            "error_type": type(exc).__name__,
+                            "error": str(exc),
+                            "latency_seconds": time.perf_counter() - started,
                         })
-                    else:
-                        destination = audio_dir / model.id / suite.id / f"{case['id']}.wav"
-                        destination.parent.mkdir(parents=True, exist_ok=True)
-                        text_file = destination.with_suffix(".txt")
-                        text_file.write_text(str(case["text"]) + "\n", encoding="utf-8")
-                        command = _command(model, {
-                            "text": str(case["text"]),
-                            "text_file": str(text_file),
-                            "output_wav": str(destination),
-                            "root": str(root),
-                        })
-                        process = subprocess.run(
-                            command, capture_output=True, text=True, timeout=timeout, check=True
-                        )
-                        latency = time.perf_counter() - started
-                        if not destination.is_file():
-                            raise RuntimeError(f"Ni chrewyd {destination}")
-                        audio_stats = wav_metrics(destination)
-                        row.update({
-                            "text": str(case["text"]),
-                            "output_wav": str(destination),
-                            "audio_metrics": audio_stats,
-                            "latency_seconds": latency,
-                            "real_time_factor": latency / audio_stats["duration_seconds"]
-                            if audio_stats["duration_seconds"] else None,
-                        })
-                    row["status"] = "ok"
-                    completed += 1
-                except Exception as exc:  # each case is a durable checkpoint
-                    row.update({
-                        "status": "error",
-                        "error_type": type(exc).__name__,
-                        "error": str(exc),
-                        "latency_seconds": time.perf_counter() - started,
-                    })
-                    errors += 1
-                _append_jsonl(output, row)
+                        errors += 1
+                    _append_jsonl(output, row)
+        finally:
+            _stop_jsonl_adapter(adapter)
     return completed, errors
 
 

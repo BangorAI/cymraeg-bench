@@ -4,14 +4,16 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True)
     parser.add_argument("--revision", required=True)
-    parser.add_argument("--audio", required=True)
+    parser.add_argument("--audio")
     parser.add_argument("--language")
+    parser.add_argument("--serve-jsonl", action="store_true")
     args = parser.parse_args()
     from transformers import pipeline
 
@@ -22,14 +24,30 @@ def main() -> None:
         revision=args.revision,
         device=device,
     )
-    if args.language:
-        result = recognizer(
-            args.audio,
-            generate_kwargs={"language": args.language, "task": "transcribe"},
-        )
-    else:
-        result = recognizer(args.audio)
-    print(json.dumps({"text": result["text"]}, ensure_ascii=False))
+    def transcribe(audio: str) -> str:
+        if args.language:
+            result = recognizer(
+                audio,
+                generate_kwargs={"language": args.language, "task": "transcribe"},
+            )
+        else:
+            result = recognizer(audio)
+        return str(result["text"])
+
+    if args.serve_jsonl:
+        print('{"ready":true}', flush=True)
+        for line in sys.stdin:
+            try:
+                request = json.loads(line)
+                if request.get("command") == "shutdown":
+                    break
+                print(json.dumps({"text": transcribe(str(request["audio"]))}, ensure_ascii=False), flush=True)
+            except Exception as exc:
+                print(json.dumps({"error": f"{type(exc).__name__}: {exc}"}, ensure_ascii=False), flush=True)
+        return
+    if not args.audio:
+        parser.error("mae angen --audio heb --serve-jsonl")
+    print(json.dumps({"text": transcribe(args.audio)}, ensure_ascii=False))
 
 
 if __name__ == "__main__":
