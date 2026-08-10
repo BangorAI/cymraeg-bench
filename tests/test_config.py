@@ -20,7 +20,8 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(
             scoreboard,
             {
-                "gpt-5-6-sol", "claude-opus-4-8", "claude-fable-5", "grok-4-20",
+                "gpt-5-6-sol", "claude-opus-4-8", "claude-opus-5",
+                "claude-fable-5", "grok-4-20",
                 "kimi-k3", "glm-5-2", "deepseek-v4-flash-0731", "jupiter-n-120b",
                 "caernarfon-3b", "caernarfon-3b-cymraeg-instruct-v0-1",
                 "mwydryn", "bangor-mistral-cymraeg-v2",
@@ -62,6 +63,14 @@ class ConfigTests(unittest.TestCase):
             models, ["caernarfon-3b-cymraeg-instruct-v0-1"]
         )[0]
         self.assertEqual(caernarfon_instruct.min_output_tokens, 512)
+
+    def test_opus_5_uses_published_api_id_price_and_controlled_effort(self):
+        opus = select_models(load_models(ROOT / "config"), ["claude-opus-5"])[0]
+        self.assertEqual(opus.api_model, "claude-opus-5")
+        self.assertEqual(opus.input_usd_per_million, 5.0)
+        self.assertEqual(opus.output_usd_per_million, 25.0)
+        self.assertEqual(opus.reasoning_effort, "low")
+        self.assertEqual(opus.min_output_tokens, 512)
 
     def test_ccc_files_match_catalog_counts_and_have_unique_ids(self):
         suites, revision = load_suites(ROOT / "config")

@@ -11,6 +11,12 @@ y Gymraeg ac addysg uwch yn saith is-set ailadroddadwy. Mae'r archwiliad yn
 mesur cywiro ac esbonio ar wahân, priod-ddull, termau, crynhoi, dyfyniadau,
 cyfeiriadau ac effaith iaith y cyfarwyddyd.
 
+Mae [CymraegBench Voice v0.1](docs/VOICE.md) yn ychwanegu protocol ASR a TTS:
+WER/CER, latency a real-time factor ar gyfer trawsgrifio, ynghyd â phecyn
+promptiau CC0 a phrawf gwrando dall ar gyfer synthesis. Mae'r catalog pinned
+yn cynnwys Zipformer BangorAI a modelau Whisper, Wav2Vec2, Kaldi a Piper
+Techiaith.
+
 Gweler [PLAN.md](PLAN.md) am y protocol, tarddiad y setiau a'r rhesymau dros y
 dewisiadau sgorio. Nid yw canlyniadau rhediadau mwg yn sgoriau cyhoeddadwy:
 eu diben yw gwirio'r harnais, terfynau tocynnau a fformat atebion cyn rhediad
@@ -37,7 +43,7 @@ gronfa ganlyniadau. Gellir defnyddio rheolwr cyfrinachau yn lle `.env`.
 ## Llwybro
 
 - `OPENAI_API_KEY`: GPT-5.6 Sol drwy `POST /v1/responses`.
-- `ANTHROPIC_API_KEY`: Claude Opus 4.8 a Claude Fable 5 drwy
+- `ANTHROPIC_API_KEY`: Claude Opus 4.8, Claude Opus 5 a Claude Fable 5 drwy
   `POST /v1/messages`.
 - `OPENROUTER_API_KEY`: Grok, Kimi, GLM a DeepSeek drwy
   `POST /api/v1/chat/completions`.
@@ -67,9 +73,12 @@ JSON. Nid yw'r prosiect yn dyblygu cynnwys cudd na thrwyddedig.
 
 Mae'r canlyniadau cyhoeddus yn cynnwys y
 [sgorfwrdd saith-model gwreiddiol](results/cymraegbench-v0.1/leaderboard.md)
-a'r [sgorfwrdd estynedig 13-model](results/cymraegbench-v0.1-estynedig/README.md).
+a'r [sgorfwrdd estynedig 14-model](results/cymraegbench-v0.1-estynedig/README.md).
 Mae'r fersiwn estynedig yn cynnwys rhediadau set lawn Jupiter-N-120B a
 Chaernarfon 3B Cymraeg Instruct v0.1, yn ogystal â'r samplau blaenorol.
+Mae [rhediad Claude Opus 5](results/cymraegbench-claude-opus-5-v0.1/leaderboard.md)
+yn ychwanegu'r model newydd ar yr un sampl penderfynedig, ynghyd ag
+Archwiliad Iaith CCC.
 
 Mae pob rhediad yn creu `runs/<run-id>.sqlite3`; gall `report` greu Markdown a
 CSV. Mae'r gronfa'n cadw'r prompt, ateb, cyfeirnod, sgôr, tocynnau, cost,
