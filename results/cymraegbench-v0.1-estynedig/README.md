@@ -1,13 +1,14 @@
 # CymraegBench v0.1: y sgorfwrdd estynedig
 
-Mae'r sgorfwrdd hwn yn cyfuno 13 model a 88,273 o ymatebion. Cafodd
+Mae'r sgorfwrdd hwn yn cyfuno 14 model a 90,326 o ymatebion. Cafodd
 Jupiter-N-120B a Chaernarfon 3B Cymraeg Instruct v0.1 eu rhedeg dros y set
-gyhoeddus lawn: 33,657 o achosion yr un. Mae'r 11 model blaenorol yn samplau
+gyhoeddus lawn: 33,657 o achosion yr un. Mae'r 12 model arall yn samplau
 hyd at 100 achos o bob set. Defnyddir yr un had, sgorwyr a fformiwla ym mhob
 rhediad, ond dylid cofio bod llai o ansicrwydd samplu yn y ddau rediad llawn.
 
-Mae Jupiter yn sgorio 48.87 ac yn dod yn wythfed. Mae Caernarfon Cymraeg
-Instruct yn sgorio 10.83 ac yn dod yn ddeuddegfed. Dim ond y 19 set graidd
+Claude Opus 5 sydd ar frig y tabl â 85.16. Mae Jupiter yn sgorio 48.87 ac yn
+dod yn nawfed; mae Caernarfon Cymraeg Instruct yn sgorio 10.83 ac yn dod yn
+drydydd ar ddeg. Dim ond y 19 set graidd
 sy'n cyfrannu at sgôr gyffredinol CymraegBench; adroddir saith dimensiwn
 Archwiliad Iaith CCC ar wahân.
 
@@ -34,6 +35,7 @@ allbynnau annilys â sgôr sero; nid ydynt yn wallau seilwaith.
 ## Rhediadau ffynhonnell
 
 - `cymraegbench-v0.1`: y saith model blaenllaw;
+- `cymraegbench-claude-opus-5-v0.1`;
 - `cymraegbench-v0.1-lleol-bangor-mistral-cymraeg-v2`;
 - `cymraegbench-v0.1-lleol-mwydryn`;
 - `cymraegbench-v0.1-lleol-mwydryn-7b-v2`;
