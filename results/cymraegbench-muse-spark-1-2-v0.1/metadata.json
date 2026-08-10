@@ -1,0 +1,84 @@
+{
+  "run_id": "cymraegbench-muse-spark-1-2-v0.1",
+  "created_at": "2026-08-10T13:01:52.422144+00:00",
+  "status": "completed",
+  "seed": 1,
+  "max_cases_per_suite": 100,
+  "techiaith_revision": "47839d2147c97fd2f10a52dd36751608e5fa36bf",
+  "models_at_run_start": [
+    {
+      "id": "muse-spark-1-2",
+      "label": "Muse Spark 1.2",
+      "provider": "openrouter",
+      "api_model": "meta/muse-spark-1.2",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "enabled": true,
+      "tier": "scoreboard",
+      "base_url_env": null,
+      "input_usd_per_million": 1.25,
+      "output_usd_per_million": 4.25,
+      "reasoning_effort": "low",
+      "min_output_tokens": 512,
+      "repetition_penalty": null,
+      "supports_seed": false,
+      "weight_access": "open"
+    }
+  ],
+  "models": [
+    {
+      "id": "muse-spark-1-2",
+      "label": "Muse Spark 1.2",
+      "provider": "openrouter",
+      "api_model": "meta/muse-spark-1.2",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "enabled": true,
+      "tier": "scoreboard",
+      "base_url_env": null,
+      "input_usd_per_million": 1.25,
+      "output_usd_per_million": 4.25,
+      "reasoning_effort": "low",
+      "min_output_tokens": 8192,
+      "repetition_penalty": null,
+      "supports_seed": false,
+      "weight_access": "open"
+    }
+  ],
+  "suites": [
+    "arc-welsh-easy",
+    "arc-welsh-challenge",
+    "piqa-welsh",
+    "truthfulqa-welsh-mc1",
+    "xnli-brit-cy",
+    "mgsm-cy",
+    "copa-cy",
+    "wnli-cy",
+    "welsh-cefr",
+    "welsh-lexicon",
+    "welsh-grammar",
+    "welsh-yes-no",
+    "welsh-obscenities",
+    "welsh-bilingual-placenames",
+    "welsh-legislation-translation",
+    "welsh-registers",
+    "welsh-mmlu-lite",
+    "welsh-toxigen",
+    "welsh-arc-easy-mini-cy",
+    "ccc-cywiro-esbonio",
+    "ccc-priod-ddull",
+    "ccc-termau",
+    "ccc-crynhoi-dyfynnu",
+    "ccc-cyfeiriadau",
+    "ccc-cyfarwyddyd-cymraeg",
+    "ccc-cyfarwyddyd-saesneg"
+  ],
+  "status_counts": {
+    "completed": 2053
+  },
+  "retry_policy": "Rows with status=error were retried in place. Successful rows were not rerun; the final model configuration records the higher output ceilings used for retries. Persistent empty or length-limited model outputs are status=invalid and score zero; infrastructure errors still block publication.",
+  "formula": {
+    "overall_score": "50% macro mean of 9 objective suites + 50% macro mean of 9 Techiaith suites",
+    "translation": "Corpus BLEU, reported separately"
+  }
+}

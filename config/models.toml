@@ -83,6 +83,22 @@ reasoning_effort = "none"
 min_output_tokens = 256
 
 [[models]]
+id = "muse-spark-1-2"
+label = "Muse Spark 1.2"
+provider = "openrouter"
+api_model = "meta/muse-spark-1.2"
+api_key_env = "OPENROUTER_API_KEY"
+base_url = "https://openrouter.ai/api/v1"
+enabled = true
+tier = "scoreboard"
+input_usd_per_million = 1.25
+output_usd_per_million = 4.25
+reasoning_effort = "low"
+min_output_tokens = 8192
+supports_seed = false
+weight_access = "open"
+
+[[models]]
 id = "glm-5-2"
 label = "GLM-5.2"
 provider = "openrouter"

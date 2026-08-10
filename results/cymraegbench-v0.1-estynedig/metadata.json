@@ -1,9 +1,9 @@
 {
   "run_id": "cymraegbench-v0.1-estynedig",
-  "created_at": "2026-08-10T12:37:00Z",
+  "created_at": "2026-08-10T13:01:52.422144+00:00",
   "status": "completed",
   "seed": 1,
-  "max_cases_per_suite": "cymysg: hyd at 100 ar gyfer y 12 model sampl; set lawn ar gyfer Jupiter a Caernarfon Cymraeg Instruct",
+  "max_cases_per_suite": "cymysg: hyd at 100 ar gyfer y 13 model sampl; set lawn ar gyfer Jupiter a Caernarfon Cymraeg Instruct",
   "techiaith_revision": "47839d2147c97fd2f10a52dd36751608e5fa36bf",
   "models": [
     {
@@ -101,6 +101,24 @@
       "reasoning_effort": "none",
       "min_output_tokens": 256,
       "repetition_penalty": null
+    },
+    {
+      "id": "muse-spark-1-2",
+      "label": "Muse Spark 1.2",
+      "provider": "openrouter",
+      "api_model": "meta/muse-spark-1.2",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "base_url": "https://openrouter.ai/api/v1",
+      "enabled": true,
+      "tier": "scoreboard",
+      "base_url_env": null,
+      "input_usd_per_million": 1.25,
+      "output_usd_per_million": 4.25,
+      "reasoning_effort": "low",
+      "min_output_tokens": 8192,
+      "repetition_penalty": null,
+      "supports_seed": false,
+      "weight_access": "open"
     },
     {
       "id": "glm-5-2",
@@ -253,7 +271,7 @@
     "welsh-arc-easy-mini-cy"
   ],
   "status_counts": {
-    "completed": 88145,
+    "completed": 90198,
     "invalid": 2101,
     "refusal": 80
   },
@@ -271,6 +289,12 @@
     },
     {
       "run_id": "cymraegbench-claude-opus-5-v0.1",
+      "model_count": 1,
+      "cases_per_model": 2053,
+      "includes_ccc": true
+    },
+    {
+      "run_id": "cymraegbench-muse-spark-1-2-v0.1",
       "model_count": 1,
       "cases_per_model": 2053,
       "includes_ccc": true
@@ -318,9 +342,9 @@
     "core_suites": 19,
     "ccc_suites": 7,
     "overall_score_uses_ccc": false,
-    "total_responses": 90326,
-    "sampled_responses": 23012,
+    "total_responses": 92379,
+    "sampled_responses": 25065,
     "full_set_responses": 67314,
-    "methodological_note": "Mae'r un fformiwla a'r un setiau'n cael eu defnyddio, ond mae'r 12 model sampl yn defnyddio hyd at 100 achos y set; mae Jupiter a Chaernarfon Cymraeg Instruct yn rhediadau set lawn. Mae rhediad y model sylfaenol Caernarfon 3B wedi'i gadw yn yr archif ond wedi'i dynnu o'r prif sgorfwrdd gan fod y fersiwn instruct bellach ar gael."
+    "methodological_note": "Mae'r un fformiwla a'r un setiau'n cael eu defnyddio, ond mae'r 13 model sampl yn defnyddio hyd at 100 achos y set; mae Jupiter a Chaernarfon Cymraeg Instruct yn rhediadau set lawn. Mae rhediad y model sylfaenol Caernarfon 3B wedi'i gadw yn yr archif ond wedi'i dynnu o'r prif sgorfwrdd gan fod y fersiwn instruct bellach ar gael."
   }
 }
