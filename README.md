@@ -45,7 +45,7 @@ gronfa ganlyniadau. Gellir defnyddio rheolwr cyfrinachau yn lle `.env`.
 - `OPENAI_API_KEY`: GPT-5.6 Sol drwy `POST /v1/responses`.
 - `ANTHROPIC_API_KEY`: Claude Opus 4.8, Claude Opus 5 a Claude Fable 5 drwy
   `POST /v1/messages`.
-- `OPENROUTER_API_KEY`: Grok, Kimi, GLM a DeepSeek drwy
+- `OPENROUTER_API_KEY`: Grok, Kimi, Muse Spark 1.2 (pwysau agored), GLM a DeepSeek drwy
   `POST /api/v1/chat/completions`.
 - Modelau lleol: cychwyn vLLM/TGI/Ollama â rhyngwyneb Chat Completions a
   gosod yr `*_API_BASE` perthnasol. Wedyn troi `enabled = true` ymlaen yn
@@ -73,12 +73,14 @@ JSON. Nid yw'r prosiect yn dyblygu cynnwys cudd na thrwyddedig.
 
 Mae'r canlyniadau cyhoeddus yn cynnwys y
 [sgorfwrdd saith-model gwreiddiol](results/cymraegbench-v0.1/leaderboard.md)
-a'r [sgorfwrdd estynedig 14-model](results/cymraegbench-v0.1-estynedig/README.md).
+a'r [sgorfwrdd estynedig 15-model](results/cymraegbench-v0.1-estynedig/README.md).
 Mae'r fersiwn estynedig yn cynnwys rhediadau set lawn Jupiter-N-120B a
 Chaernarfon 3B Cymraeg Instruct v0.1, yn ogystal â'r samplau blaenorol.
 Mae [rhediad Claude Opus 5](results/cymraegbench-claude-opus-5-v0.1/leaderboard.md)
 yn ychwanegu'r model newydd ar yr un sampl penderfynedig, ynghyd ag
 Archwiliad Iaith CCC.
+Mae [rhediad Muse Spark 1.2](results/cymraegbench-muse-spark-1-2-v0.1/leaderboard.md)
+yn defnyddio'r un sampl a'r un sgorwyr drwy OpenRouter.
 
 Mae pob rhediad yn creu `runs/<run-id>.sqlite3`; gall `report` greu Markdown a
 CSV. Mae'r gronfa'n cadw'r prompt, ateb, cyfeirnod, sgôr, tocynnau, cost,

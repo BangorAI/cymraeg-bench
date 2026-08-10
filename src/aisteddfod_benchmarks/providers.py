@@ -209,8 +209,9 @@ def _chat(
         ],
         "max_tokens": max_tokens,
         "temperature": 0,
-        "seed": 1,
     }
+    if model.supports_seed:
+        payload["seed"] = 1
     if model.repetition_penalty is not None:
         payload["repetition_penalty"] = model.repetition_penalty
     if openrouter:

@@ -14,7 +14,7 @@ Cymraeg eu gwasanaethu drwy endpoint lleol sy'n gydnaws ag OpenAI.
 |---|---|---|
 | OpenAI uniongyrchol | GPT-5.6 Sol | ymlaen |
 | Anthropic uniongyrchol | Claude Opus 4.8; Claude Opus 5; Claude Fable 5 | ymlaen |
-| OpenRouter | Grok 4.20; Kimi K3; GLM-5.2; DeepSeek V4-Flash-0731 | ymlaen |
+| OpenRouter | Grok 4.20; Kimi K3; Muse Spark 1.2; GLM-5.2; DeepSeek V4-Flash-0731 | ymlaen |
 | Lleol / OpenAI-compatible | Jupiter-N-120B; Caernarfon 3B; Mwydryn | wedi'u diffodd nes bod endpoint ar gael |
 | Cyfeirnodau lleol | Mistral 7B; Llama 3 8B; BangorAI Mistral Cymraeg v2 | dewisol |
 
@@ -49,6 +49,9 @@ yn `data/private/` a darparu'r gorchymyn dilysu drwy newidyn amgylchedd.
   amlddewis; dim cadwyn feddwl yn y canlyniad.
 - Defnyddio `effort=low` yn benodol ar Claude Opus 5, fel Claude Fable 5, er
   mwyn rheoli cost a chadw'r ddau fodel cenhedlaeth 5 ar yr un gosodiad.
+- Defnyddio `effort=low` ar Muse Spark 1.2, hepgor `seed` am nad yw endpoint
+  Meta yn ei gynnal, a chaniatáu hyd at 8,192 o docynnau i osgoi torri'r
+  ateb ar ôl rhesymu cudd.
 - Pinio fersiwn y set, ID y model, ymateb crai, defnydd tocynnau, cost, amser,
   statws gwrthod a metadata llwybro OpenRouter.
 - Defnyddio set prawf/validation swyddogol; samplu penderfynedig gyda'r un

@@ -23,6 +23,8 @@ class ModelConfig:
     reasoning_effort: str | None = None
     min_output_tokens: int | None = None
     repetition_penalty: float | None = None
+    supports_seed: bool = True
+    weight_access: str | None = None
 
     @property
     def resolved_base_url(self) -> str:

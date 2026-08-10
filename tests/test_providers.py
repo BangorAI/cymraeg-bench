@@ -98,6 +98,20 @@ class ProviderTests(unittest.TestCase):
             response = providers.generate(configured, "s", "u", max_tokens=8)
         self.assertEqual(response.text, "A")
 
+    def test_chat_omits_seed_for_models_without_seed_support(self):
+        def fake_post(url, headers, payload, **kwargs):
+            self.assertNotIn("seed", payload)
+            return {
+                "model": "upstream/model",
+                "choices": [{"message": {"content": "A"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 2, "completion_tokens": 1},
+            }, 4
+
+        configured = model("openrouter", supports_seed=False)
+        with patch.dict(os.environ, {"KEY": "secret"}), patch.object(providers, "_post_json", fake_post):
+            response = providers.generate(configured, "s", "u", max_tokens=8)
+        self.assertEqual(response.text, "A")
+
     def test_chat_passes_model_repetition_penalty(self):
         def fake_post(url, headers, payload, **kwargs):
             self.assertEqual(payload["repetition_penalty"], 1.15)

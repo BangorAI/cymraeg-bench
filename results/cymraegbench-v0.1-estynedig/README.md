@@ -1,14 +1,14 @@
 # CymraegBench v0.1: y sgorfwrdd estynedig
 
-Mae'r sgorfwrdd hwn yn cyfuno 14 model a 90,326 o ymatebion. Cafodd
+Mae'r sgorfwrdd hwn yn cyfuno 15 model a 92,379 o ymatebion. Cafodd
 Jupiter-N-120B a Chaernarfon 3B Cymraeg Instruct v0.1 eu rhedeg dros y set
-gyhoeddus lawn: 33,657 o achosion yr un. Mae'r 12 model arall yn samplau
+gyhoeddus lawn: 33,657 o achosion yr un. Mae'r 13 model arall yn samplau
 hyd at 100 achos o bob set. Defnyddir yr un had, sgorwyr a fformiwla ym mhob
 rhediad, ond dylid cofio bod llai o ansicrwydd samplu yn y ddau rediad llawn.
 
-Claude Opus 5 sydd ar frig y tabl â 85.16. Mae Jupiter yn sgorio 48.87 ac yn
-dod yn nawfed; mae Caernarfon Cymraeg Instruct yn sgorio 10.83 ac yn dod yn
-drydydd ar ddeg. Dim ond y 19 set graidd
+Claude Opus 5 sydd ar frig y tabl â 85.16, gyda Muse Spark 1.2 yn ail â
+83.01. Mae Jupiter yn sgorio 48.87 ac yn dod yn ddegfed; mae Caernarfon
+Cymraeg Instruct yn sgorio 10.83 ac yn dod yn bedwerydd ar ddeg. Dim ond y 19 set graidd
 sy'n cyfrannu at sgôr gyffredinol CymraegBench; adroddir saith dimensiwn
 Archwiliad Iaith CCC ar wahân.
 
@@ -21,6 +21,8 @@ Archwiliad Iaith CCC ar wahân.
   allbwn wrth ailbrofi;
 - Caernarfon Cymraeg Instruct: addasydd LoRA dros britllm-3b-v0.1 a therfyn
   cyd-destun brodorol o 2,048;
+- Muse Spark 1.2: OpenRouter, `effort=low`, heb `seed` gan nad yw endpoint
+  Meta yn ei gynnal, a lleiafswm allbwn o 8,192 o docynnau;
 - Mwydryn Phi-2: fformat Alpaca;
 - Mistral Cymraeg v2 a Mwydryn 7B v2: fformat Llama 2 a nodir ar gardiau'r
   modelau;
@@ -36,6 +38,7 @@ allbynnau annilys â sgôr sero; nid ydynt yn wallau seilwaith.
 
 - `cymraegbench-v0.1`: y saith model blaenllaw;
 - `cymraegbench-claude-opus-5-v0.1`;
+- `cymraegbench-muse-spark-1-2-v0.1`;
 - `cymraegbench-v0.1-lleol-bangor-mistral-cymraeg-v2`;
 - `cymraegbench-v0.1-lleol-mwydryn`;
 - `cymraegbench-v0.1-lleol-mwydryn-7b-v2`;

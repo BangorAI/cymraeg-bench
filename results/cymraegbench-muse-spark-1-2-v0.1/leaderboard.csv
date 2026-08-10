@@ -1,0 +1,2 @@
+rank,model_id,model,overall_score,welsh_reasoning,practical_welsh,translation_bleu,completed,refusals,refusal_pct,invalids,invalid_pct,coverage_pct,cost_usd
+1,muse-spark-1-2,Muse Spark 1.2,83.01,85.68,80.33,71.46,2053,0,0.0,0,0.0,100.0,5.107537

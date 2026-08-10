@@ -22,7 +22,8 @@ class ConfigTests(unittest.TestCase):
             {
                 "gpt-5-6-sol", "claude-opus-4-8", "claude-opus-5",
                 "claude-fable-5", "grok-4-20",
-                "kimi-k3", "glm-5-2", "deepseek-v4-flash-0731", "jupiter-n-120b",
+                "kimi-k3", "muse-spark-1-2", "glm-5-2",
+                "deepseek-v4-flash-0731", "jupiter-n-120b",
                 "caernarfon-3b", "caernarfon-3b-cymraeg-instruct-v0-1",
                 "mwydryn", "bangor-mistral-cymraeg-v2",
                 "mwydryn-7b-v2",
@@ -71,6 +72,17 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(opus.output_usd_per_million, 25.0)
         self.assertEqual(opus.reasoning_effort, "low")
         self.assertEqual(opus.min_output_tokens, 512)
+
+    def test_muse_spark_1_2_uses_openrouter_catalog_values(self):
+        muse = select_models(load_models(ROOT / "config"), ["muse-spark-1-2"])[0]
+        self.assertEqual(muse.provider, "openrouter")
+        self.assertEqual(muse.api_model, "meta/muse-spark-1.2")
+        self.assertEqual(muse.input_usd_per_million, 1.25)
+        self.assertEqual(muse.output_usd_per_million, 4.25)
+        self.assertEqual(muse.reasoning_effort, "low")
+        self.assertEqual(muse.min_output_tokens, 8192)
+        self.assertFalse(muse.supports_seed)
+        self.assertEqual(muse.weight_access, "open")
 
     def test_ccc_files_match_catalog_counts_and_have_unique_ids(self):
         suites, revision = load_suites(ROOT / "config")
