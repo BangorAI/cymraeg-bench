@@ -37,6 +37,11 @@ def _post_json(
     attempts: int = 5,
     timeout: int = 180,
 ) -> tuple[dict[str, Any], int]:
+    # Identify the client instead of urllib's default Python user agent, which
+    # some Cloudflare-protected inference proxies reject (see issue #3).
+    headers = dict(headers)
+    if not any(name.lower() == "user-agent" for name in headers):
+        headers["User-Agent"] = "cymraeg-bench (+https://github.com/BangorAI/cymraeg-bench)"
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     retryable = {408, 409, 429, 500, 502, 503, 504}
     for attempt in range(attempts):
