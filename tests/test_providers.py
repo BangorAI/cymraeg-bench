@@ -1,3 +1,5 @@
+import io
+import json
 import os
 import unittest
 from unittest.mock import patch
@@ -15,6 +17,45 @@ def model(provider: str, **kwargs) -> ModelConfig:
 
 
 class ProviderTests(unittest.TestCase):
+    def test_post_json_sends_user_agent_on_every_attempt(self):
+        headers = {"Authorization": "Bearer test", "Content-Type": "application/json"}
+        payload = {"message": "Cymraeg: ŵ"}
+        with (
+            patch.object(providers.urllib.request, "urlopen", side_effect=[
+                TimeoutError("retry"), io.BytesIO(b'{"ok": true}')
+            ]) as urlopen,
+            patch.object(providers.time, "sleep"),
+        ):
+            response, _ = providers._post_json(
+                "https://example.test/v1/chat/completions", headers, payload,
+                attempts=2, timeout=7,
+            )
+        self.assertEqual(response, {"ok": True})
+        self.assertEqual(urlopen.call_count, 2)
+        for call in urlopen.call_args_list:
+            request = call.args[0]
+            self.assertEqual(request.get_header("User-agent"),
+                             "cymraeg-bench (+https://github.com/BangorAI/cymraeg-bench)")
+            self.assertEqual(request.get_header("Authorization"), "Bearer test")
+            self.assertEqual(request.get_header("Content-type"), "application/json")
+            self.assertEqual(request.get_method(), "POST")
+            self.assertEqual(json.loads(request.data), payload)
+            self.assertEqual(call.kwargs["timeout"], 7)
+        self.assertEqual(headers, {
+            "Authorization": "Bearer test", "Content-Type": "application/json"
+        })
+
+    def test_post_json_preserves_explicit_user_agent_case_insensitively(self):
+        for name in ("User-Agent", "user-agent", "USER-AGENT"):
+            with self.subTest(name=name):
+                headers = {name: "custom-client/1.0"}
+                with patch.object(providers.urllib.request, "urlopen",
+                                  return_value=io.BytesIO(b'{}')) as urlopen:
+                    providers._post_json("https://example.test", headers, {})
+                request = urlopen.call_args.args[0]
+                self.assertEqual(request.get_header("User-agent"), "custom-client/1.0")
+                self.assertEqual(headers, {name: "custom-client/1.0"})
+
     def test_openrouter_response_and_cost(self):
         def fake_post(url, headers, payload, **kwargs):
             self.assertEqual(headers["Authorization"], "Bearer secret")
